@@ -48,13 +48,14 @@ public class StackManager : MonoBehaviour
         Debug.Log("Trying to drop [" + draggingCardData.Rank + " of " + draggingCardData.Suit + "] on " +
             "" +  "[" + pointerEnterCardData.Rank + " of " + pointerEnterCardData.Suit + "]");
 
-        if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black)
+        if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
+            || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
         {
             EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
             return;
         }
 
-        if (draggingCardData.Rank > pointerEnterCardData.Rank)
+        if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank > 1)
         {
             EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
             return;

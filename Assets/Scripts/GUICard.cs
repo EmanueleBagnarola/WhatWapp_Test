@@ -185,6 +185,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     public void OnDrop(PointerEventData eventData)
     {
+        if (_currentSide == CardSide.Back)
+            return;
+
         EventsManager.Instance.OnCardDropped.Invoke();
     }
 
