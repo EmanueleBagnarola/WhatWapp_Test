@@ -13,6 +13,11 @@ public class EventsManager : MonoBehaviour
     public Events.EventStartGame OnStartGame = null;
     public Events.EventShuffleEnded OnShuffleEnded = null;
     public Events.EventCardsDealed OnCardsDealed = null;
+    public Events.EventCardDropped OnCardDropped = null;
+    public Events.EventCardPointerEnter OnCardPointerEnter = null;
+    public Events.EventCardPointerExit OnCardPointerExit = null;
+    public Events.EventCardDragging OnCardDragging = null;
+    public Events.EventCardStacked OnCardStacked = null;
 
     private void Awake()
     {
@@ -34,5 +39,10 @@ public class Events
     [System.Serializable] public class EventStartGame : UnityEvent { };
     [System.Serializable] public class EventShuffleEnded : UnityEvent<List<CardData>> { };
     [System.Serializable] public class EventCardsDealed : UnityEvent { };
+    [System.Serializable] public class EventCardDragging : UnityEvent<GUICard> { };
+    [System.Serializable] public class EventCardDropped : UnityEvent { };
+    [System.Serializable] public class EventCardPointerEnter : UnityEvent<GUICard> { };
+    [System.Serializable] public class EventCardPointerExit : UnityEvent { };
+    [System.Serializable] public class EventCardStacked : UnityEvent<GUICard, bool, Transform> { }
 }
 

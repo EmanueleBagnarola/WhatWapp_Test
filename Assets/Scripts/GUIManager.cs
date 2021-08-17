@@ -62,11 +62,6 @@ public class GUIManager : MonoBehaviour
         HandleSpawnCardsPlacement();
     }
 
-    private void InitEvents()
-    {
-        EventsManager.Instance.OnShuffleEnded.AddListener(HandleEventShuffleEnded);
-    }
-
     private void InitGUICards(List<CardData> cardsData)
     {
         StartCoroutine(SpawnCards(cardsData));
@@ -84,16 +79,20 @@ public class GUIManager : MonoBehaviour
 
             for (int i = 0; i < cardsToInstantiate; i++)
             {
-                GUICard guiCard = Instantiate(_guiCardPrefab);
-                guiCard.transform.position = _deckTransform.position;
+                GUICard guiCard = Instantiate(_guiCardPrefab, _deckTransform);
+
+                // Save the column transform reference inside each GUICard script
+                Transform columnTransform = _landscapeCardsPositions[currentRow];
+                guiCard.UpdateColumnTransformReference(columnTransform);
 
                 // Create a temp object to use as a position reference where to move the card object
-                GameObject spawnPosition = Instantiate(new GameObject("temp", typeof(RectTransform)), _landscapeCardsPositions[currentRow]);
+                GameObject spawnPosition = Instantiate(new GameObject("temp", typeof(RectTransform)), columnTransform);
                 spawnPosition.GetComponent<RectTransform>().sizeDelta = guiCard.GetComponent<RectTransform>().sizeDelta;
 
                 guiCard.SetCardData(cardsData[0]);
                 cardsData.RemoveAt(0);
            
+                // Set the last spawned card to be facing its front
                 if (i == cardsToInstantiate - 1)
                 {
                     guiCard.TurnCard(CardSide.Front);
@@ -127,6 +126,11 @@ public class GUIManager : MonoBehaviour
     }
 
     #region Events Handlers
+    private void InitEvents()
+    {
+        EventsManager.Instance.OnShuffleEnded.AddListener(HandleEventShuffleEnded);
+    }
+
     private void HandleEventShuffleEnded(List<CardData> cardsData)
     {
         InitGUICards(cardsData);

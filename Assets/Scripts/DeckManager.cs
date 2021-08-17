@@ -31,11 +31,6 @@ public class DeckManager : MonoBehaviour
         //----------------------
     }
 
-    private void InitEvents()
-    {
-        EventsManager.Instance.OnStartGame.AddListener(HandleEventOnStartGame);
-    }
-
     /// <summary>
     /// Generate the 52 cards and shuffle them 
     /// </summary>
@@ -101,7 +96,12 @@ public class DeckManager : MonoBehaviour
     //}
 
     #region Events Handlers
-    private void HandleEventOnStartGame()
+    private void InitEvents()
+    {
+        EventsManager.Instance.OnStartGame.AddListener(HandleEventStartGame);
+    }
+
+    private void HandleEventStartGame()
     {
         GenerateCards();
     }

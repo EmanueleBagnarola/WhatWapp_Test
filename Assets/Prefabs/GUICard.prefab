@@ -160,6 +160,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3891659841595379961}
   - component: {fileID: 6778117043231942317}
+  - component: {fileID: 6292260664030108306}
   m_Layer: 0
   m_Name: GUICard
   m_TagString: Untagged
@@ -185,8 +186,8 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 161.8815, y: 243.5648}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -206,6 +207,18 @@ MonoBehaviour:
   _rankText: {fileID: 6231990832756569296}
   _suitImageBig: {fileID: 3891659841047550510}
   _suitImageSmall: {fileID: 3891659841200778223}
+--- !u!225 &6292260664030108306
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3891659841595379960}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &3891659842262328746
 GameObject:
   m_ObjectHideFlags: 0

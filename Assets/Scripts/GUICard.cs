@@ -5,8 +5,25 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    public CardData CardDataReference
+    {
+        get
+        {
+            return _currentCardData;
+        }
+    }
+
+    public Transform ColumnTransformReference
+    {
+        get
+        {
+            return _columnTransformReference;
+        }
+    }
+
+    #region GUI settings
     [SerializeField]
     private Image _bodySprite = null;
 
@@ -18,16 +35,30 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     [SerializeField]
     private Image _suitImageSmall = null;
+    #endregion
 
-    private Vector3 _startingPosition = Vector3.zero;
-    private Transform _startingParent = null;
+    private Vector3 _dragStartPosition = Vector3.zero;
+
+    //private Transform _startingParent = null;
 
     private Vector3 _currentDragPosition = Vector3.zero;
+
     private bool _dragging = false;
 
     private bool _resetPosition = false;
 
     private CardSide _currentSide = CardSide.Back;
+
+    private CardData _currentCardData = null;
+
+    private CanvasGroup _canvasGroup = null;
+
+    private Transform _columnTransformReference = null;
+
+    private void Awake()
+    {
+        _canvasGroup = GetComponent<CanvasGroup>();
+    }
 
     private void Start()
     {
@@ -47,6 +78,8 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     /// <param name="cardData"></param>
     public void SetCardData(CardData cardData)
     {
+        _currentCardData = cardData;
+
         _rankText.text = cardData.Rank.ToString();
 
         Sprite suitSprite = Resources.Load<Sprite>("Sprite_" + cardData.Suit);
@@ -105,7 +138,21 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _currentSide = sideToShow;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="columnTransformReference"></param>
+    public void UpdateColumnTransformReference(Transform columnTransformReference)
+    {
+        _columnTransformReference = columnTransformReference;
+    }
 
+    public void StackCard(Transform columnStackTransform)
+    {
+        transform.SetParent(columnStackTransform);
+    }
+
+    #region Event System Methods
     public void OnDrag(PointerEventData eventData)
     {
         _dragging = true;
@@ -117,7 +164,14 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (_currentSide == CardSide.Back)
             return;
 
-        _startingPosition = transform.position;
+        EventsManager.Instance.OnCardDragging.Invoke(this);
+
+        // disable the raycast block to prevent the cursor to detect this card when trying to drop it on a different card
+        _canvasGroup.blocksRaycasts = false;
+
+        _dragStartPosition = transform.position;
+
+        // set the transform parent of the card as an object that isn't the column reference in order to drag it around
         transform.SetParent(GUIManager.Instance.DragParent);
     }
 
@@ -126,14 +180,30 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (_currentSide == CardSide.Back)
             return;
 
-        _dragging = false;
-        _resetPosition = true;
+        EventsManager.Instance.OnCardDropped.Invoke();
     }
 
-    private void InitEvents()
+    public void OnDrop(PointerEventData eventData)
     {
-        EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
+        EventsManager.Instance.OnCardDropped.Invoke();
     }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (_currentSide == CardSide.Back)
+            return;
+
+        EventsManager.Instance.OnCardPointerEnter.Invoke(this);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (_currentSide == CardSide.Back)
+            return;
+
+        EventsManager.Instance.OnCardPointerExit.Invoke();
+    }
+    #endregion
 
     private void HandleDrag()
     {
@@ -147,12 +217,12 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     {
         if (_resetPosition)
         {
-            transform.position = Vector3.Lerp(transform.position, _startingPosition, 50 * Time.deltaTime);
+            transform.position = Vector3.Lerp(transform.position, _dragStartPosition, 50 * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, _startingPosition) <= 0.01f)
+            if (Vector3.Distance(transform.position, _dragStartPosition) <= 0.01f)
             {
                 _resetPosition = false;
-                transform.SetParent(_startingParent);
+                transform.SetParent(_columnTransformReference);
             }
         }
     }
@@ -169,14 +239,36 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     }
 
     #region Events Handlers
+    private void InitEvents()
+    {
+        EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
+        EventsManager.Instance.OnCardStacked.AddListener(HandleEventCardStacked);
+    }
+
     private void HandleEventCardsDealed()
     {
         // Disable the temp object used to place the card using move animation
         transform.parent.gameObject.SetActive(false);
         // Set the new parent 
-        transform.SetParent(transform.parent.parent);
-        // Set the new parent as starting parent
-        _startingParent = transform.parent;
+        transform.SetParent(_columnTransformReference);
+    }
+
+    private void HandleEventCardStacked(GUICard guiCard, bool stacked, Transform columnTransformReference)
+    {
+        if (!stacked && _dragging)
+        {
+            _resetPosition = true;
+        }
+
+        if (stacked && guiCard == this)
+        {
+            UpdateColumnTransformReference(columnTransformReference);
+            transform.SetParent(columnTransformReference);
+        }
+
+        _canvasGroup.blocksRaycasts = true;
+        _dragging = false;
+
     }
     #endregion
 }
