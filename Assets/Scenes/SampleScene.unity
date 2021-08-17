@@ -1118,6 +1118,9 @@ MonoBehaviour:
   OnCardDragging:
     m_PersistentCalls:
       m_Calls: []
+  OnCardStacked:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1183998410
 Transform:
   m_ObjectHideFlags: 0
@@ -1220,6 +1223,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c9cde855faf274db5dfc6b0b0c517e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _draggingCard: {fileID: 0}
+  _pointerEnterCard: {fileID: 0}
 --- !u!1 &1375583140
 GameObject:
   m_ObjectHideFlags: 0
