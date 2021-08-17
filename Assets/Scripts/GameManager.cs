@@ -67,6 +67,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void StartGame()
     {
-        EventsManager.Instance.OnStartGame?.Invoke();
+        EventsManager.Instance.OnStartGame.Invoke();
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class DeckManager : MonoBehaviour
 {
@@ -9,9 +10,7 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public static DeckManager Instance = null;
 
-    private List<CardSuit> unitializedSuits = new List<CardSuit>();
-
-    private List<CardData> cardDataList = new List<CardData>();
+    private List<CardData> _cardDataList = new List<CardData>();
 
     private void Start()
     {
@@ -37,51 +36,74 @@ public class DeckManager : MonoBehaviour
         EventsManager.Instance.OnStartGame.AddListener(HandleEventOnStartGame);
     }
 
-    private IEnumerator InitDeck()
-    {
-        InitCardSuits();
-
-        yield return new WaitForSeconds(0.1f);
-
-        GenerateCards();
-    }
-
-    private void InitCardSuits()
-    {
-        unitializedSuits.Add(CardSuit.Clubs);
-        unitializedSuits.Add(CardSuit.Diamonds);
-        unitializedSuits.Add(CardSuit.Hearts);
-        unitializedSuits.Add(CardSuit.Spades);
-    }
-
     /// <summary>
-    /// Generate the 52 cards 
+    /// Generate the 52 cards and shuffle them 
     /// </summary>
     private void GenerateCards()
     {
-        if (unitializedSuits.Count <= 0)
+        // Fill the available suits list. The generation removes one suit each time it generates 13 cards of that suit
+        List<CardSuit> availableSuit = new List<CardSuit>();
+        availableSuit.Add(CardSuit.Clubs);
+        availableSuit.Add(CardSuit.Diamonds);
+        availableSuit.Add(CardSuit.Hearts);
+        availableSuit.Add(CardSuit.Spades);
+
+        // Fill the available deck positions list. The generation removes one position eache time it generates one card in that position
+        List<int> availableDeckPositions = new List<int>();
+
+        for (int i = 0; i < 52; i++)
         {
-            Debug.Log("Generation Ended - " + cardDataList.Count + " cards.");
-            return;
+            availableDeckPositions.Add(i);
         }
 
-        CardSuit suitToInit = unitializedSuits[unitializedSuits.Count - 1];
-
-        for (int i = 1; i < 14; i++)
+        while(availableSuit.Count > 0)
         {
-            CardData cardData = new CardData(i, suitToInit);
-            cardDataList.Add(cardData);
-            //Debug.Log("Card: " + i + " of " + suitToInit);
+            CardSuit suitToInit = availableSuit[availableSuit.Count - 1];
+
+            for (int i = 1; i < 14; i++)
+            {
+                int deckPosition = availableDeckPositions[Random.Range(0, availableDeckPositions.Count - 1)];
+                CardData cardData = new CardData(i, suitToInit, deckPosition);
+                _cardDataList.Add(cardData);
+                //Debug.Log("Card: " + cardData.Rank + " of " + cardData.Suit + "[" + cardData.DeckPosition + "]");
+
+                availableDeckPositions.Remove(deckPosition);
+            }
+
+            availableSuit.Remove(suitToInit);
         }
 
-        unitializedSuits.Remove(suitToInit);
-        GenerateCards();
+        //Debug.Log("Generation Ended - " + _cardDataList.Count + " cards.");
+
+        // order the list by cards data deck position
+        _cardDataList = _cardDataList.OrderBy(x => x.DeckPosition).ToList();
+
+        //TestDuplicates();
+
+        EventsManager.Instance.OnShuffleEnded.Invoke(_cardDataList);
     }
+
+    //private void TestDuplicates()
+    //{
+    //    for (int i = 0; i < _cardDataList.Count; i++)
+    //    {
+    //        CardData cardData = _cardDataList[i];
+
+    //        if(i < _cardDataList.Count - 2)
+    //        {
+    //            CardData nextCardData = _cardDataList[i + 1];
+    //            if(cardData.DeckPosition == nextCardData.DeckPosition)
+    //            {
+    //                Debug.LogWarning("FOUND DUPLICATE AT: " + i);
+    //            }
+    //        }
+    //    }
+    //}
 
     #region Events Handlers
     private void HandleEventOnStartGame()
     {
-        StartCoroutine(InitDeck());
+        GenerateCards();
     }
     #endregion
 }

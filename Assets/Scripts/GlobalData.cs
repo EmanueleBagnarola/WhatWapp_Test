@@ -18,3 +18,16 @@ public enum CardSuit
     Hearts,
     Spades
 }
+
+public enum CardSide
+{
+    Back,
+    Front
+}
+
+public enum CardColor
+{
+    Empty,
+    Black,
+    Red
+}
