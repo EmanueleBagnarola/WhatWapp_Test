@@ -12,6 +12,7 @@ public class EventsManager : MonoBehaviour
 
     public Events.EventStartGame OnStartGame = null;
     public Events.EventShuffleEnded OnShuffleEnded = null;
+    public Events.EventCardsDealed OnCardsDealed = null;
 
     private void Awake()
     {
@@ -32,5 +33,6 @@ public class Events
 {
     [System.Serializable] public class EventStartGame : UnityEvent { };
     [System.Serializable] public class EventShuffleEnded : UnityEvent<List<CardData>> { };
+    [System.Serializable] public class EventCardsDealed : UnityEvent { };
 }
 

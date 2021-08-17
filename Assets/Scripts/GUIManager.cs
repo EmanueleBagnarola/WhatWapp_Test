@@ -23,6 +23,9 @@ public class GUIManager : MonoBehaviour
     [SerializeField]
     private GUICard _guiCardPrefab = null;
 
+    [SerializeField]
+    private Transform _deckTransform = null;
+
     /// <summary>
     /// The table transforms that contains the position of each column in landscape mode 
     /// </summary>
@@ -31,6 +34,9 @@ public class GUIManager : MonoBehaviour
 
     [SerializeField]
     private Transform _dragParent = null;
+
+    private Transform _currentSpawnedCard = null;
+    private Transform _currentSpawnPosition = null;
 
     private void Awake()
     {
@@ -51,12 +57,22 @@ public class GUIManager : MonoBehaviour
         InitEvents(); 
     }
 
+    private void Update()
+    {
+        HandleSpawnCardsPlacement();
+    }
+
     private void InitEvents()
     {
         EventsManager.Instance.OnShuffleEnded.AddListener(HandleEventShuffleEnded);
     }
 
     private void InitGUICards(List<CardData> cardsData)
+    {
+        StartCoroutine(SpawnCards(cardsData));
+    }
+
+    private IEnumerator SpawnCards(List<CardData> cardsData)
     {
         int currentRow = 0;
 
@@ -68,17 +84,46 @@ public class GUIManager : MonoBehaviour
 
             for (int i = 0; i < cardsToInstantiate; i++)
             {
-                GUICard guiCard = Instantiate(_guiCardPrefab, _landscapeCardsPositions[currentRow]);           
+                GUICard guiCard = Instantiate(_guiCardPrefab);
+                guiCard.transform.position = _deckTransform.position;
+
+                // Create a temp object to use as a position reference where to move the card object
+                GameObject spawnPosition = Instantiate(new GameObject("temp", typeof(RectTransform)), _landscapeCardsPositions[currentRow]);
+                spawnPosition.GetComponent<RectTransform>().sizeDelta = guiCard.GetComponent<RectTransform>().sizeDelta;
+
                 guiCard.SetCardData(cardsData[0]);
                 cardsData.RemoveAt(0);
-                if(i == cardsToInstantiate - 1)
+           
+                if (i == cardsToInstantiate - 1)
                 {
                     guiCard.TurnCard(CardSide.Front);
                 }
+
+                _currentSpawnPosition = spawnPosition.transform;
+                _currentSpawnedCard = guiCard.transform;
+
+                yield return new WaitForSeconds(0.1f);
             }
 
             currentRow++;
         }
+
+        EventsManager.Instance.OnCardsDealed.Invoke();
+
+        _currentSpawnedCard = null;
+        _currentSpawnPosition = null;
+    }
+
+    /// <summary>
+    /// Handle starting cards placement animation
+    /// </summary>
+    private void HandleSpawnCardsPlacement()
+    {
+        if (_currentSpawnedCard == null)
+            return;
+
+        _currentSpawnedCard.transform.position = Vector3.Lerp(_currentSpawnedCard.transform.position, _currentSpawnPosition.position, 50 * Time.deltaTime);
+        _currentSpawnedCard.transform.SetParent(_currentSpawnPosition);
     }
 
     #region Events Handlers

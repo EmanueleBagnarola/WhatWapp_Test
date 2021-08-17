@@ -29,6 +29,11 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     private CardSide _currentSide = CardSide.Back;
 
+    private void Start()
+    {
+        InitEvents();
+    }
+
     private void Update()
     {
         HandleDrag();
@@ -72,8 +77,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         }
 
         _rankText.color = GetColor(cardData.GetCardColor());
-
-        _startingParent = transform.parent;
     }
 
     /// <summary>
@@ -100,6 +103,36 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         }
 
         _currentSide = sideToShow;
+    }
+
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        _dragging = true;
+        _currentDragPosition = eventData.position;
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (_currentSide == CardSide.Back)
+            return;
+
+        _startingPosition = transform.position;
+        transform.SetParent(GUIManager.Instance.DragParent);
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (_currentSide == CardSide.Back)
+            return;
+
+        _dragging = false;
+        _resetPosition = true;
+    }
+
+    private void InitEvents()
+    {
+        EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
     }
 
     private void HandleDrag()
@@ -135,27 +168,15 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         return Color.black;
     }
 
-    public void OnDrag(PointerEventData eventData)
+    #region Events Handlers
+    private void HandleEventCardsDealed()
     {
-        _dragging = true;
-        _currentDragPosition = eventData.position;
+        // Disable the temp object used to place the card using move animation
+        transform.parent.gameObject.SetActive(false);
+        // Set the new parent 
+        transform.SetParent(transform.parent.parent);
+        // Set the new parent as starting parent
+        _startingParent = transform.parent;
     }
-
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        if (_currentSide == CardSide.Back)
-            return;
-
-        _startingPosition = transform.position;
-        transform.SetParent(GUIManager.Instance.DragParent);
-    }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        if (_currentSide == CardSide.Back)
-            return;
-
-        _dragging = false;
-        _resetPosition = true;
-    }
+    #endregion
 }
