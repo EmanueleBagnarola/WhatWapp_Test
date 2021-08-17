@@ -9,6 +9,14 @@ public class GUIManager : MonoBehaviour
     /// </summary>
     public static GUIManager Instance = null;
 
+    public Transform DragParent
+    {
+        get
+        {
+            return _dragParent;
+        }
+    }
+
     /// <summary>
     /// The prefab of the GUICard that shows the assigned CardData information 
     /// </summary>
@@ -20,6 +28,9 @@ public class GUIManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     private Transform[] _landscapeCardsPositions = null;
+
+    [SerializeField]
+    private Transform _dragParent = null;
 
     private void Awake()
     {
