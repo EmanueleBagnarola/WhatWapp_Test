@@ -9,14 +9,6 @@ public class GUIManager : MonoBehaviour
     /// </summary>
     public static GUIManager Instance = null;
 
-    public Transform DragParent
-    {
-        get
-        {
-            return _dragParent;
-        }
-    }
-
     /// <summary>
     /// The prefab of the GUICard that shows the assigned CardData information 
     /// </summary>
@@ -31,9 +23,6 @@ public class GUIManager : MonoBehaviour
     /// </summary>
     [SerializeField]
     private Transform[] _landscapeCardsPositions = null;
-
-    [SerializeField]
-    private Transform _dragParent = null;
 
     private Transform _currentSpawnedCard = null;
     private Transform _currentSpawnPosition = null;
@@ -60,6 +49,11 @@ public class GUIManager : MonoBehaviour
     private void Update()
     {
         HandleSpawnCardsPlacement();
+
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            GameManager.Instance.UndoCommand();
+        }
     }
 
     private void InitGUICards(List<CardData> cardsData)
@@ -83,7 +77,7 @@ public class GUIManager : MonoBehaviour
 
                 // Save the column transform reference inside each GUICard script
                 Transform columnTransform = _landscapeCardsPositions[currentRow];
-                guiCard.UpdateColumnTransformReference(columnTransform);
+                guiCard.UpdateParent(columnTransform);
 
                 // Create a temp object to use as a position reference where to move the card object
                 GameObject spawnPosition = Instantiate(new GameObject("temp", typeof(RectTransform)), columnTransform);
@@ -95,7 +89,7 @@ public class GUIManager : MonoBehaviour
                 // Set the last spawned card to be facing its front
                 if (i == cardsToInstantiate - 1)
                 {
-                    guiCard.TurnCard(CardSide.Front);
+                    guiCard.FlipCard(CardSide.Front);
                 }
 
                 _currentSpawnPosition = spawnPosition.transform;

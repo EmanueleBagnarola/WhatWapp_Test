@@ -19,7 +19,15 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     {
         get
         {
-            return _columnTransformReference;
+            return _currentParent;
+        }
+    }
+
+    public CardSide CurrentSide
+    {
+        get
+        {
+            return _currentSide;
         }
     }
 
@@ -39,8 +47,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     private Vector3 _dragStartPosition = Vector3.zero;
 
-    //private Transform _startingParent = null;
-
     private Vector3 _currentDragPosition = Vector3.zero;
 
     private bool _dragging = false;
@@ -52,12 +58,16 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private CardData _currentCardData = null;
 
     private CanvasGroup _canvasGroup = null;
+    private Canvas _canvas = null;
 
-    private Transform _columnTransformReference = null;
+    private Transform _currentParent = null;
+
+    private GUIColumn _guiColumn = null;
 
     private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
+        _canvas = GetComponent<Canvas>();
     }
 
     private void Start()
@@ -116,7 +126,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     /// Switch card GUI visualization from back to front or viceversa
     /// </summary>
     /// <param name="sideToShow"></param>
-    public void TurnCard(CardSide sideToShow)
+    public void FlipCard(CardSide sideToShow)
     {
         _bodySprite.sprite = Resources.Load<Sprite>("Sprite_" + sideToShow);
 
@@ -141,20 +151,23 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="columnTransformReference"></param>
-    public void UpdateColumnTransformReference(Transform columnTransformReference)
+    /// <param name="newParent"></param>
+    public void UpdateParent(Transform newParent)
     {
-        _columnTransformReference = columnTransformReference;
+        _currentParent = newParent;
     }
 
-    public void StackCard(Transform columnStackTransform)
+    public void SetSortingOrder(int sortingOrder)
     {
-        transform.SetParent(columnStackTransform);
+        _canvas.sortingOrder = sortingOrder;
     }
 
     #region Event System Methods
     public void OnDrag(PointerEventData eventData)
     {
+        if (_currentSide == CardSide.Back)
+            return;
+
         _dragging = true;
         _currentDragPosition = eventData.position;
     }
@@ -171,8 +184,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
         _dragStartPosition = transform.position;
 
-        // set the transform parent of the card as an object that isn't the column reference in order to drag it around
-        transform.SetParent(GUIManager.Instance.DragParent);
+        // override sorting when the card is dragged for the first time. The sorting is set to false when the card is dealed in order to prevent sorting visualization bugs
+        // and set the canvas sorting order to be on top of other cards
+        _canvas.overrideSorting = true;
+        _canvas.sortingOrder = 2;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -180,7 +195,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (_currentSide == CardSide.Back)
             return;
 
-        EventsManager.Instance.OnCardDropped.Invoke();
+        //EventsManager.Instance.OnCardDropped.Invoke();
+        EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+        //_canvas.sortingOrder = 1;
+        _canvas.overrideSorting = false;
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -189,6 +207,8 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return;
 
         EventsManager.Instance.OnCardDropped.Invoke();
+        //_canvas.sortingOrder = 1;
+        _canvas.overrideSorting = false;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -225,7 +245,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             if (Vector3.Distance(transform.position, _dragStartPosition) <= 0.01f)
             {
                 _resetPosition = false;
-                transform.SetParent(_columnTransformReference);
             }
         }
     }
@@ -253,20 +272,29 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         // Disable the temp object used to place the card using move animation
         transform.parent.gameObject.SetActive(false);
         // Set the new parent 
-        transform.SetParent(_columnTransformReference);
+        transform.SetParent(_currentParent);
+
+        _guiColumn = transform.parent.GetComponent<GUIColumn>();
+        _guiColumn.AddCard(this);
     }
 
-    private void HandleEventCardStacked(GUICard guiCard, bool stacked, Transform columnTransformReference)
+    private void HandleEventCardStacked(GUICard guiCard, bool stacked, Transform newParent)
     {
+        // If the stack check failed on the current dragging card, reset its position
         if (!stacked && _dragging)
         {
             _resetPosition = true;
         }
 
+        // Execute the move command
         if (stacked && guiCard == this)
         {
-            UpdateColumnTransformReference(columnTransformReference);
-            transform.SetParent(columnTransformReference);
+            ICommand moveCommand = new MoveCommand(transform, transform.parent, newParent);
+            GameManager.Instance.CommandHandler.AddCommand(moveCommand);
+
+            moveCommand.Execute();
+
+            //_guiColumn.CheckCardFlip();
         }
 
         _canvasGroup.blocksRaycasts = true;

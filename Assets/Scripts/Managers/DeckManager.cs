@@ -12,11 +12,6 @@ public class DeckManager : MonoBehaviour
 
     private List<CardData> _cardDataList = new List<CardData>();
 
-    private void Start()
-    {
-        InitEvents();
-    }
-
     private void Awake()
     {
         // Init Singleton ------
@@ -29,6 +24,11 @@ public class DeckManager : MonoBehaviour
             Destroy(this);
         }
         //----------------------
+    }
+
+    private void Start()
+    {
+        InitEvents();
     }
 
     /// <summary>

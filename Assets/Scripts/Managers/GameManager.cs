@@ -24,10 +24,21 @@ public class GameManager : MonoBehaviour
             return _currentGameState;
         }
     }
+
+    public CommandHandler CommandHandler
+    {
+        get
+        {
+            return _commandHandler;
+        }
+    }
+
     /// <summary>
     /// Stores the current game state
     /// </summary>
     private GameState _currentGameState = GameState.Running;
+
+    private CommandHandler _commandHandler = new CommandHandler();
 
     private void Awake()
     {
@@ -43,11 +54,18 @@ public class GameManager : MonoBehaviour
         //----------------------
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         InitLog();
 
+        yield return new WaitForSeconds(1);
+
         StartGame();
+    }
+
+    public void UndoCommand()
+    {
+        _commandHandler.UndoCommand();
     }
 
     /// <summary>

@@ -31,3 +31,9 @@ public enum CardColor
     Black,
     Red
 }
+
+public enum UndoAction
+{
+    Add,
+    Remove
+}
