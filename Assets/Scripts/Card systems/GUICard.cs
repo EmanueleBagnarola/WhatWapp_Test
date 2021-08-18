@@ -126,6 +126,48 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     /// <param name="sideToShow"></param>
     public void FlipCard(CardSide sideToShow)
     {
+        StartCoroutine(FlipAnimation(sideToShow));
+
+        //_bodySprite.sprite = Resources.Load<Sprite>("Sprite_" + sideToShow);
+
+        //switch (sideToShow)
+        //{
+        //    case CardSide.Back:
+        //        _rankText.gameObject.SetActive(false);
+        //        _suitImageBig.gameObject.SetActive(false);
+        //        _suitImageSmall.gameObject.SetActive(false);
+        //        break;
+
+        //    case CardSide.Front:
+        //        _rankText.gameObject.SetActive(true);
+        //        _suitImageBig.gameObject.SetActive(true);
+        //        _suitImageSmall.gameObject.SetActive(true);
+        //        break;
+        //}
+
+        //_currentSide = sideToShow;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="newParent"></param>
+    public void UpdateParent(Transform newParent)
+    {
+        _currentParent = newParent;
+    }
+
+    public void SetSortingOrder(int sortingOrder)
+    {
+        _canvas.sortingOrder = sortingOrder;
+    }
+
+    private IEnumerator FlipAnimation(CardSide sideToShow)
+    {
+        iTween.ScaleTo(gameObject, new Vector3(0, 1, 1), 0.08f);
+
+        yield return new WaitForSeconds(0.1f);
+
         _bodySprite.sprite = Resources.Load<Sprite>("Sprite_" + sideToShow);
 
         switch (sideToShow)
@@ -143,21 +185,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
                 break;
         }
 
+        iTween.ScaleTo(gameObject, new Vector3(1, 1, 1), 0.08f);
+
         _currentSide = sideToShow;
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="newParent"></param>
-    public void UpdateParent(Transform newParent)
-    {
-        _currentParent = newParent;
-    }
-
-    public void SetSortingOrder(int sortingOrder)
-    {
-        _canvas.sortingOrder = sortingOrder;
     }
 
     #region Event System Methods
@@ -281,7 +311,8 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         // If the stack check failed on the current dragging card, reset its position
         if (!stacked && _dragging)
         {
-            _resetPosition = true;
+            //_resetPosition = true;
+            iTween.MoveTo(gameObject, _dragStartPosition, 2f);
         }
 
         // Execute the move command
