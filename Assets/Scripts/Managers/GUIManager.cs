@@ -84,6 +84,8 @@ public class GUIManager : MonoBehaviour
                 spawnPosition.GetComponent<RectTransform>().sizeDelta = guiCard.GetComponent<RectTransform>().sizeDelta;
 
                 guiCard.SetCardData(cardsData[0]);
+
+                // Remove the spawned card from the cards data list in order to let the DeckManager handle the remaining cards
                 cardsData.RemoveAt(0);
            
                 // Set the last spawned card to be facing its front
@@ -101,7 +103,7 @@ public class GUIManager : MonoBehaviour
             currentRow++;
         }
 
-        EventsManager.Instance.OnCardsDealed.Invoke();
+        EventsManager.Instance.OnCardsDealed.Invoke(cardsData);
 
         _currentSpawnedCard = null;
         _currentSpawnPosition = null;

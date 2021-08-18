@@ -10,7 +10,7 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public static DeckManager Instance = null;
 
-    private List<CardData> _cardDataList = new List<CardData>();
+    private List<CardData> _deckCards = new List<CardData>();
 
     private void Awake()
     {
@@ -31,11 +31,28 @@ public class DeckManager : MonoBehaviour
         InitEvents();
     }
 
+    public CardData DrawCard(int cardIndex)
+    {
+        return _deckCards[cardIndex];
+    }
+
+    public void PickCard(GUICard guiCard)
+    {
+        _deckCards.Remove(guiCard.CardDataReference);
+    }
+
+    public void InsertCard(GUICard guiCard, int deckIndex)
+    {
+        _deckCards.Insert(deckIndex, guiCard.CardDataReference);
+    }
+
     /// <summary>
     /// Generate the 52 cards and shuffle them 
     /// </summary>
     private void GenerateCards()
     {
+        List<CardData> _cardDataList = new List<CardData>();
+
         // Fill the available suits list. The generation removes one suit each time it generates 13 cards of that suit
         List<CardSuit> availableSuit = new List<CardSuit>();
         availableSuit.Add(CardSuit.Clubs);
@@ -99,11 +116,34 @@ public class DeckManager : MonoBehaviour
     private void InitEvents()
     {
         EventsManager.Instance.OnStartGame.AddListener(HandleEventStartGame);
+        EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
+        EventsManager.Instance.OnCardStacked.AddListener(HandleEventCardStacked);
     }
 
     private void HandleEventStartGame()
     {
         GenerateCards();
+    }
+
+    private void HandleEventCardsDealed(List<CardData> cardsData)
+    {
+        // Assign the deck cards as the remaining card data list after all the table cards are dealed
+        _deckCards = cardsData;
+    }
+
+    private void HandleEventCardStacked(GUICard guiCard, bool stacked, Transform newParent)
+    {
+        if (guiCard == null)
+            return;
+
+        if (_deckCards.Contains(guiCard.CardDataReference))
+        {
+            // Pick Command
+            ICommand pickCommand = new PickCommand(guiCard, _deckCards.IndexOf(guiCard.CardDataReference));
+            GameManager.Instance.CommandHandler.AddCommand(pickCommand);
+            pickCommand.Execute();
+            EventsManager.Instance.OnUndoDeckCard.Invoke(guiCard);
+        }
     }
     #endregion
 }

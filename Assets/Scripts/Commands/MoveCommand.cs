@@ -24,10 +24,10 @@ public class MoveCommand : ICommand
         GUIColumn sourceColumn = _sourceParent.GetComponent<GUIColumn>();
         GUIColumn destinationColumn = _destinationParent.GetComponent<GUIColumn>();
 
-        sourceColumn.RemoveCard(_guiCardReference);
+        sourceColumn?.RemoveCard(_guiCardReference);
         destinationColumn.AddCard(_guiCardReference);
 
-        sourceColumn.CheckAddCommand();
+        sourceColumn?.CheckAddCommand();
 
         _cardTransform.SetParent(_destinationParent);
     }
@@ -40,13 +40,13 @@ public class MoveCommand : ICommand
         GUIColumn destinationColumn = _sourceParent.GetComponent<GUIColumn>();
 
         // if the first card of the undo destination column where we are ADDING a card is already front side (and the only one card front sided), then turn it
-        destinationColumn.CheckUndoCommand(UndoAction.Add);
+        destinationColumn?.CheckUndoCommand(_guiCardReference.CardDataReference, UndoAction.Add);
 
         sourceColumn.RemoveCard(_guiCardReference);
-        destinationColumn.AddCard(_guiCardReference);
+        destinationColumn?.AddCard(_guiCardReference);
 
         // then chekcs if the first card 
-        sourceColumn.CheckUndoCommand(UndoAction.Remove);
+        sourceColumn.CheckUndoCommand(_guiCardReference.CardDataReference, UndoAction.Remove);
 
         _cardTransform.SetParent(_sourceParent);
     }

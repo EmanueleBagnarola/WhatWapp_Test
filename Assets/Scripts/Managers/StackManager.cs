@@ -48,26 +48,26 @@ public class StackManager : MonoBehaviour
         //    "" + "[" + pointerEnterCardData.Rank + " of " + pointerEnterCardData.Suit + "]");
 
         // Check if cards that user is trying to stack are of the same color
-        //if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
-        //    || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
-        //{
-        //    EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
-        //    return;
-        //}
+        if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
+            || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
+        {
+            EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+            return;
+        }
 
-        //// Check if rank's cards that user is trying to stack are compatible
-        //if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank > 1 || pointerEnterCardData.Rank - draggingCardData.Rank == 0)
-        //{
-        //    EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
-        //    return;
-        //}
+        // Check if rank's cards that user is trying to stack are compatible
+        if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank > 1 || pointerEnterCardData.Rank - draggingCardData.Rank == 0)
+        {
+            EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+            return;
+        }
 
-        //// Check if I am trying to stack a card on top of the card it's already stacked on
-        //if(_draggingCard.transform.parent == _pointerEnterCard.transform.parent)
-        //{
-        //    EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
-        //    return;
-        //}
+        // Check if I am trying to stack a card on top of the card it's already stacked on
+        if (_draggingCard.transform.parent == _pointerEnterCard.transform.parent)
+        {
+            EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+            return;
+        }
 
         EventsManager.Instance.OnCardStacked.Invoke(_draggingCard, true, _pointerEnterCard.transform.parent);
 

@@ -62,8 +62,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     private Transform _currentParent = null;
 
-    private GUIColumn _guiColumn = null;
-
     private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
@@ -267,15 +265,15 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         EventsManager.Instance.OnCardStacked.AddListener(HandleEventCardStacked);
     }
 
-    private void HandleEventCardsDealed()
+    private void HandleEventCardsDealed(List<CardData> cardsData)
     {
+        if (!transform.parent.name.Contains("temp")) 
+            return;
+
         // Disable the temp object used to place the card using move animation
         transform.parent.gameObject.SetActive(false);
         // Set the new parent 
         transform.SetParent(_currentParent);
-
-        _guiColumn = transform.parent.GetComponent<GUIColumn>();
-        _guiColumn.AddCard(this);
     }
 
     private void HandleEventCardStacked(GUICard guiCard, bool stacked, Transform newParent)
