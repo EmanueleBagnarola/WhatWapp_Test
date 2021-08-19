@@ -9,6 +9,14 @@ public class GUIManager : MonoBehaviour
     /// </summary>
     public static GUIManager Instance = null;
 
+    public GUICard GUICardPrefab
+    {
+        get
+        {
+            return _guiCardPrefab;
+        }
+    }
+
     /// <summary>
     /// The prefab of the GUICard that shows the assigned CardData information 
     /// </summary>
@@ -48,7 +56,7 @@ public class GUIManager : MonoBehaviour
 
     private void Update()
     {
-        HandleSpawnCardsPlacement();
+        //HandleSpawnCardsPlacement();
 
         if (Input.GetKeyDown(KeyCode.U))
         {
@@ -83,7 +91,7 @@ public class GUIManager : MonoBehaviour
                 GameObject spawnPosition = Instantiate(new GameObject("temp", typeof(RectTransform)), columnTransform);
                 spawnPosition.GetComponent<RectTransform>().sizeDelta = guiCard.GetComponent<RectTransform>().sizeDelta;
 
-                guiCard.SetCardData(cardsData[0]);
+                guiCard.SetCardData(cardsData[0], CardArea.Table);
 
                 // Remove the spawned card from the cards data list in order to let the DeckManager handle the remaining cards
                 cardsData.RemoveAt(0);
@@ -94,9 +102,15 @@ public class GUIManager : MonoBehaviour
                     guiCard.FlipCard(CardSide.Front);
                 }
 
-                _currentSpawnPosition = spawnPosition.transform;
-                _currentSpawnedCard = guiCard.transform;
+                yield return new WaitForSeconds(0.01f);
+                iTween.MoveTo(guiCard.gameObject, spawnPosition.transform.position, 1.5f);
+                yield return new WaitForSeconds(0.01f);
+                guiCard.transform.SetParent(spawnPosition.transform);
 
+                //_currentSpawnPosition = spawnPosition.transform;
+                //_currentSpawnedCard = guiCard.transform;
+
+                // Time to wait to next card to spawn
                 yield return new WaitForSeconds(0.1f);
             }
 

@@ -37,7 +37,7 @@ public class StackManager : MonoBehaviour
     {
         if (_draggingCard == null || _pointerEnterCard == null)
         {
-            EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+            CallCardStackFail();
             return;
         }
 
@@ -51,21 +51,28 @@ public class StackManager : MonoBehaviour
         if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
             || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
         {
-            EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+            CallCardStackFail();
             return;
         }
 
         // Check if rank's cards that user is trying to stack are compatible
         if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank > 1 || pointerEnterCardData.Rank - draggingCardData.Rank == 0)
         {
-            EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+            CallCardStackFail();
             return;
         }
 
-        // Check if I am trying to stack a card on top of the card it's already stacked on
+        // Check if the player is trying to stack a card on top of the card it's already stacked on
         if (_draggingCard.transform.parent == _pointerEnterCard.transform.parent)
         {
-            EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
+            CallCardStackFail();
+            return;
+        }
+
+        // Check if the player is trying to stack a table card on a draw pile card
+        if(_pointerEnterCard.CardArea == CardArea.DrawPile)
+        {
+            CallCardStackFail();
             return;
         }
 
@@ -73,6 +80,11 @@ public class StackManager : MonoBehaviour
 
         _draggingCard = null;
         _pointerEnterCard = null;
+    }
+
+    private void CallCardStackFail()
+    {
+        EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
     }
 
     #region Events Handlers

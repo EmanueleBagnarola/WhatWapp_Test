@@ -32,7 +32,14 @@ public enum CardColor
     Red
 }
 
-public enum UndoAction
+public enum CardArea
+{
+    Table,
+    DrawPile,
+    AcesPile,
+}
+
+public enum MoveUndoType
 {
     Add,
     Remove

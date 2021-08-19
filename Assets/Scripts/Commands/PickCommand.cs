@@ -5,12 +5,12 @@ using UnityEngine;
 public class PickCommand : ICommand
 {
     private GUICard _guiCardReference = null;
-    private int _deckIndex = 0;
+    private int _drawnCardsIndex = 0;
 
-    public PickCommand(GUICard guiCardReference, int deckIndex)
+    public PickCommand(GUICard guiCardReference, int drawnCardsIndex)
     {
         _guiCardReference = guiCardReference;
-        _deckIndex = deckIndex;
+        _drawnCardsIndex = drawnCardsIndex;
     }
 
     public void Execute()
@@ -20,6 +20,7 @@ public class PickCommand : ICommand
 
     public void Undo()
     {
-        DeckManager.Instance.InsertCard(_guiCardReference, _deckIndex);
+        DeckManager.Instance.InsertCard(_guiCardReference, _drawnCardsIndex);
+        EventsManager.Instance.OnUndoPick.Invoke(_guiCardReference);
     }
 }

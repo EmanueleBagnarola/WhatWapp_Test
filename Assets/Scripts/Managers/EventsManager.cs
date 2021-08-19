@@ -18,7 +18,8 @@ public class EventsManager : MonoBehaviour
     public Events.EventCardPointerExit OnCardPointerExit = null;
     public Events.EventCardDragging OnCardDragging = null;
     public Events.EventCardStacked OnCardStacked = null;
-    public Events.EventUndoDeckCard OnUndoDeckCard = null;
+    public Events.EventUndoPick OnUndoPick = null;
+    public Events.EventUndoDraw OnUndoDraw = null;
 
     private void Awake()
     {
@@ -45,6 +46,7 @@ public class Events
     [System.Serializable] public class EventCardPointerEnter : UnityEvent<GUICard> { };
     [System.Serializable] public class EventCardPointerExit : UnityEvent { };
     [System.Serializable] public class EventCardStacked : UnityEvent<GUICard, bool, Transform> { }
-    [System.Serializable] public class EventUndoDeckCard : UnityEvent<GUICard> { }
+    [System.Serializable] public class EventUndoPick : UnityEvent<GUICard> { }
+    [System.Serializable] public class EventUndoDraw : UnityEvent { }
 }
 

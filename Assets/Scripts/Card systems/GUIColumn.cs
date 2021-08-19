@@ -35,7 +35,7 @@ public class GUIColumn : MonoBehaviour
         }
     }
 
-    public void CheckUndoCommand(CardData undoCard, UndoAction columnAction)
+    public void CheckUndoCommand(CardData undoCard, MoveUndoType columnAction)
     {
         if (_guiCards.Count <= 0)
             return;
@@ -44,7 +44,7 @@ public class GUIColumn : MonoBehaviour
 
         switch (columnAction)
         {
-            case UndoAction.Add:
+            case MoveUndoType.Add:
                 // Check if the second card is front sided too.
                 GUICard secondCard = _guiCards[_guiCards.Count - 2];
 
@@ -61,7 +61,7 @@ public class GUIColumn : MonoBehaviour
                 }
                 break;
 
-            case UndoAction.Remove:
+            case MoveUndoType.Remove:
                 if (firstCard.CurrentSide == CardSide.Back)
                 {
                     firstCard.FlipCard(CardSide.Front);

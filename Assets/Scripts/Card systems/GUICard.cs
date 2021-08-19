@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 
 public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
 {
+    #region Public reference variables
     public CardData CardDataReference
     {
         get
@@ -14,15 +15,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return _currentCardData;
         }
     }
-
-    public Transform ColumnTransformReference
-    {
-        get
-        {
-            return _currentParent;
-        }
-    }
-
     public CardSide CurrentSide
     {
         get
@@ -30,8 +22,23 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return _currentSide;
         }
     }
+    public CardArea CardArea
+    {
+        get
+        {
+            return _cardArea;
+        }
+    }
+    #endregion
 
-    #region GUI settings
+    #region Private reference variables
+    private CardSide _currentSide = CardSide.Back;
+    private CardArea _cardArea = CardArea.Table;
+    private CardData _currentCardData = null;
+    private Transform _currentParent = null;
+    #endregion
+
+    #region GUI Editor variables
     [SerializeField]
     private Image _bodySprite = null;
 
@@ -45,22 +52,19 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private Image _suitImageSmall = null;
     #endregion
 
+    #region Drag variables
     private Vector3 _dragStartPosition = Vector3.zero;
-
     private Vector3 _currentDragPosition = Vector3.zero;
-
     private bool _dragging = false;
+    //private bool _resetPosition = false;
+    #endregion
 
-    private bool _resetPosition = false;
-
-    private CardSide _currentSide = CardSide.Back;
-
-    private CardData _currentCardData = null;
-
+    #region Visual sorting variables
     private CanvasGroup _canvasGroup = null;
     private Canvas _canvas = null;
-
-    private Transform _currentParent = null;
+    private bool _beginDragOverrideSorting = false;
+    private int _beginDragSortingOrder = 0;
+    #endregion
 
     private void Awake()
     {
@@ -77,14 +81,14 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     {
         HandleDrag();
 
-        HandleResetPosition();
+        //HandleResetPosition();
     }
 
     /// <summary>
-    /// Initialize the card GUI with the assigned card data information
+    /// Initialize the card GUI with the assigned card data information and the area where the card began its life
     /// </summary>
     /// <param name="cardData"></param>
-    public void SetCardData(CardData cardData)
+    public void SetCardData(CardData cardData, CardArea cardArea)
     {
         _currentCardData = cardData;
 
@@ -117,7 +121,13 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
                 break;
         }
 
+        _cardArea = cardArea;
         _rankText.color = GetColor(cardData.GetCardColor());
+    }
+
+    public void SetCardArea(CardArea cardArea)
+    {
+        _cardArea = cardArea;
     }
 
     /// <summary>
@@ -127,25 +137,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     public void FlipCard(CardSide sideToShow)
     {
         StartCoroutine(FlipAnimation(sideToShow));
-
-        //_bodySprite.sprite = Resources.Load<Sprite>("Sprite_" + sideToShow);
-
-        //switch (sideToShow)
-        //{
-        //    case CardSide.Back:
-        //        _rankText.gameObject.SetActive(false);
-        //        _suitImageBig.gameObject.SetActive(false);
-        //        _suitImageSmall.gameObject.SetActive(false);
-        //        break;
-
-        //    case CardSide.Front:
-        //        _rankText.gameObject.SetActive(true);
-        //        _suitImageBig.gameObject.SetActive(true);
-        //        _suitImageSmall.gameObject.SetActive(true);
-        //        break;
-        //}
-
-        //_currentSide = sideToShow;
     }
 
     /// <summary>
@@ -159,35 +150,8 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     public void SetSortingOrder(int sortingOrder)
     {
+        _canvas.overrideSorting = true;
         _canvas.sortingOrder = sortingOrder;
-    }
-
-    private IEnumerator FlipAnimation(CardSide sideToShow)
-    {
-        iTween.ScaleTo(gameObject, new Vector3(0, 1, 1), 0.08f);
-
-        yield return new WaitForSeconds(0.1f);
-
-        _bodySprite.sprite = Resources.Load<Sprite>("Sprite_" + sideToShow);
-
-        switch (sideToShow)
-        {
-            case CardSide.Back:
-                _rankText.gameObject.SetActive(false);
-                _suitImageBig.gameObject.SetActive(false);
-                _suitImageSmall.gameObject.SetActive(false);
-                break;
-
-            case CardSide.Front:
-                _rankText.gameObject.SetActive(true);
-                _suitImageBig.gameObject.SetActive(true);
-                _suitImageSmall.gameObject.SetActive(true);
-                break;
-        }
-
-        iTween.ScaleTo(gameObject, new Vector3(1, 1, 1), 0.08f);
-
-        _currentSide = sideToShow;
     }
 
     #region Event System Methods
@@ -212,10 +176,14 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
         _dragStartPosition = transform.position;
 
+        // get the canvas settings before the drag started
+        _beginDragOverrideSorting = _canvas.overrideSorting;
+        _beginDragSortingOrder = _canvas.sortingOrder;
+
         // override sorting when the card is dragged for the first time. The sorting is set to false when the card is dealed in order to prevent sorting visualization bugs
-        // and set the canvas sorting order to be on top of other cards
+        // and set the canvas sorting order to be on top of other cards  
         _canvas.overrideSorting = true;
-        _canvas.sortingOrder = 2;
+        _canvas.sortingOrder = 5;
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -226,7 +194,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         //EventsManager.Instance.OnCardDropped.Invoke();
         EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
         //_canvas.sortingOrder = 1;
-        _canvas.overrideSorting = false;
+        //_canvas.overrideSorting = false;
+
+        _canvas.overrideSorting = _beginDragOverrideSorting;
+        _canvas.sortingOrder = _beginDragSortingOrder;
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -236,7 +207,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
         EventsManager.Instance.OnCardDropped.Invoke();
         //_canvas.sortingOrder = 1;
-        _canvas.overrideSorting = false;
+        //_canvas.overrideSorting = false;
+
+        _canvas.overrideSorting = _beginDragOverrideSorting;
+        _canvas.sortingOrder = _beginDragSortingOrder;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -256,6 +230,34 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     }
     #endregion
 
+    private IEnumerator FlipAnimation(CardSide sideToShow)
+    {
+        iTween.ScaleTo(gameObject, new Vector3(0, 1, 1), 0.2f);
+
+        yield return new WaitForSeconds(0.1f);
+
+        _bodySprite.sprite = Resources.Load<Sprite>("Sprite_" + sideToShow);
+
+        switch (sideToShow)
+        {
+            case CardSide.Back:
+                _rankText.gameObject.SetActive(false);
+                _suitImageBig.gameObject.SetActive(false);
+                _suitImageSmall.gameObject.SetActive(false);
+                break;
+
+            case CardSide.Front:
+                _rankText.gameObject.SetActive(true);
+                _suitImageBig.gameObject.SetActive(true);
+                _suitImageSmall.gameObject.SetActive(true);
+                break;
+        }
+
+        iTween.ScaleTo(gameObject, new Vector3(1, 1, 1), 0.2f);
+
+        _currentSide = sideToShow;
+    }
+
     private void HandleDrag()
     {
         if (!_dragging || _currentSide == CardSide.Back)
@@ -264,18 +266,18 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         transform.position = Vector3.Lerp(transform.position, _currentDragPosition, 20 * Time.deltaTime);
     }
 
-    private void HandleResetPosition()
-    {
-        if (_resetPosition)
-        {
-            transform.position = Vector3.Lerp(transform.position, _dragStartPosition, 50 * Time.deltaTime);
+    //private void HandleResetPosition()
+    //{
+    //    if (_resetPosition)
+    //    {
+    //        transform.position = Vector3.Lerp(transform.position, _dragStartPosition, 50 * Time.deltaTime);
 
-            if (Vector3.Distance(transform.position, _dragStartPosition) <= 0.01f)
-            {
-                _resetPosition = false;
-            }
-        }
-    }
+    //        if (Vector3.Distance(transform.position, _dragStartPosition) <= 0.01f)
+    //        {
+    //            _resetPosition = false;
+    //        }
+    //    }
+    //}
 
     private Color GetColor(CardColor cardColor)
     {
@@ -312,18 +314,19 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (!stacked && _dragging)
         {
             //_resetPosition = true;
-            iTween.MoveTo(gameObject, _dragStartPosition, 2f);
+            iTween.MoveTo(gameObject, _dragStartPosition, 0.5f);
         }
 
         // Execute the move command
         if (stacked && guiCard == this)
         {
-            ICommand moveCommand = new MoveCommand(transform, transform.parent, newParent);
+            ICommand moveCommand = new MoveCommand(transform, transform.parent, newParent, _cardArea);
             GameManager.Instance.CommandHandler.AddCommand(moveCommand);
 
             moveCommand.Execute();
 
-            //_guiColumn.CheckCardFlip();
+            // TODO: check with UNDO
+            _canvas.overrideSorting = false;
         }
 
         _canvasGroup.blocksRaycasts = true;
