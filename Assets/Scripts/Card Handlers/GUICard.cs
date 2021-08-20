@@ -29,6 +29,14 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return _cardArea;
         }
     }
+
+    public List<GUICard> AppendedCards
+    {
+        get
+        {
+            return _appendedCards;
+        }
+    }
     #endregion
 
     #region Private reference variables
@@ -36,6 +44,8 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private CardArea _cardArea = CardArea.Table;
     private CardData _currentCardData = null;
     private Transform _currentParent = null;
+    private List<GUICard> _appendedCards = new List<GUICard>();
+    private bool _isAppended = false;
     #endregion
 
     #region GUI Editor variables
@@ -160,6 +170,29 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _canvasGroup.blocksRaycasts = value;
     }
 
+    public void SetStartAppendDragPosition(Vector3 position)
+    {
+        _dragStartPosition = position;
+    }
+
+    public void SetAppended(bool value)
+    {
+        _isAppended = value;
+    }
+
+    public void AppendDraggingCards(GUICard cardToAppend)
+    {
+        cardToAppend.SetAppended(true);
+        cardToAppend.SetStartAppendDragPosition(cardToAppend.transform.position);
+        cardToAppend.EnableRaycast(false);
+        _appendedCards.Add(cardToAppend);   
+    }
+
+    public void ReleaseAppendedCard(GUICard cardToRelease)
+    {
+        _appendedCards.Remove(cardToRelease);
+    }
+
     #region Event System Methods
     public void OnDrag(PointerEventData eventData)
     {
@@ -265,6 +298,16 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return;
 
         transform.position = Vector3.Lerp(transform.position, _currentDragPosition, 20 * Time.deltaTime);
+
+        if(_appendedCards.Count > 0)
+        {
+            for (int i = 0; i < _appendedCards.Count; i++)
+            {
+                Transform cardTransform = _appendedCards[i].transform;
+
+                cardTransform.position = Vector3.Lerp(cardTransform.position, transform.position + new Vector3(0, -70f, 0), 17 * Time.deltaTime);
+            }
+        }
     }
 
     private Color GetColor(CardColor cardColor)
@@ -278,12 +321,18 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         return Color.black;
     }
 
+    private void MoveToEndDragPosition()
+    {
+        iTween.MoveTo(gameObject, _dragStartPosition, 0.5f);
+    }
+
     #region Events Handlers
     private void InitEvents()
     {
         EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
         EventsManager.Instance.OnCardMove.AddListener(HandleCardMove);
         EventsManager.Instance.OnCardFailMove.AddListener(HandleCardFailMove);
+        EventsManager.Instance.OnCardDropped.AddListener(HandleEventCardDropped);
     }
 
     private void HandleEventCardsDealed(List<CardData> cardsData)
@@ -303,23 +352,36 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (guiCard != this)
             return;
 
-        _canvas.sortingOrder = 1;
         _canvas.overrideSorting = false;
+        _canvas.sortingOrder = 1;
         _canvasGroup.blocksRaycasts = true;
         _dragging = false;
     }
 
     private void HandleCardFailMove(GUICard guiCard)
     {
+        if (_isAppended)
+        {
+            MoveToEndDragPosition();
+            _isAppended = false;
+        }
+
         if (guiCard != this)
             return;
 
-        iTween.MoveTo(gameObject, _dragStartPosition, 0.5f);
+        MoveToEndDragPosition();
+
+        _appendedCards.Clear();
 
         _canvas.overrideSorting = _beginDragOverrideSorting;
         _canvas.sortingOrder = _beginDragSortingOrder;
         _canvasGroup.blocksRaycasts = true;
         _dragging = false;
+    }
+
+    private void HandleEventCardDropped()
+    {
+
     }
     #endregion
 }

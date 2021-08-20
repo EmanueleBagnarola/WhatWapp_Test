@@ -33,8 +33,25 @@ public class CommandSystem
             _index--;
         }
 
-        if (lastCommand is MoveCommand)
+        MoveCommand moveCommand = (MoveCommand)lastCommand;
+
+        if(lastCommand is MoveCommand && moveCommand.IsMultipleMove == false)
             return;
+
+        else
+        {
+            for (int i = _commandList.Count - 1; i > 0; i--)
+            {
+                MoveCommand multipleMoveCommand = _commandList[i] as MoveCommand;
+                if (multipleMoveCommand.IsMultipleMove)
+                {
+                    multipleMoveCommand.Undo();
+                    _commandList.Remove(multipleMoveCommand);
+                    _index --;
+                }
+            }
+        }
+
 
         if (_index > 0)
         {

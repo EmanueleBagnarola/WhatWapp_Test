@@ -88,7 +88,24 @@ public class TablePileHandler : MonoBehaviour, IDropHandler
 
     private void HandleEventCardDragging(GUICard guiCard)
     {
+        if (!_guiCards.Contains(guiCard))
+            return;
 
+        int draggingCardIndex = _guiCards.IndexOf(guiCard);
+
+        // for list count, check if index + 1 has a gui card ref
+        for (int i = draggingCardIndex + 1; i < _guiCards.Count; i++)
+        {
+            GUICard hangingCard = _guiCards[i];
+
+            if (guiCard == null)
+                return;
+
+            hangingCard.SetSortingOrder(5 + draggingCardIndex+1);
+
+            //hangingCard.transform.SetParent(guiCard.transform);
+            guiCard.AppendDraggingCards(hangingCard);
+        }
     }
 
     private void HandleEventCardMove(GUICard guiCard, Transform destinationParent)

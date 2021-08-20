@@ -52,7 +52,7 @@ public class TableCardsHandler : MonoBehaviour
                 spawnPosition.GetComponent<RectTransform>().sizeDelta = guiCard.GetComponent<RectTransform>().sizeDelta;
 
                 guiCard.SetCardData(cardsData[0], CardArea.Table);
-                guiCard.EnableRaycast(false);
+                //guiCard.EnableRaycast(false);
 
                 // Remove the spawned card from the cards data list in order to let the DeckManager handle the remaining cards
                 cardsData.RemoveAt(0);
