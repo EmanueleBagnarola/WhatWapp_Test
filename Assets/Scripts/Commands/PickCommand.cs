@@ -15,12 +15,11 @@ public class PickCommand : ICommand
 
     public void Execute()
     {
-        DeckManager.Instance.PickCard(_guiCardReference);
+        EventsManager.Instance.OnPick.Invoke(_guiCardReference);
     }
 
     public void Undo()
     {
-        DeckManager.Instance.InsertCard(_guiCardReference, _drawnCardsIndex);
-        EventsManager.Instance.OnUndoPick.Invoke(_guiCardReference);
+        EventsManager.Instance.OnUndoPick.Invoke(_guiCardReference, _drawnCardsIndex);
     }
 }

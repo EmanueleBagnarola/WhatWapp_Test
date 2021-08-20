@@ -11,6 +11,7 @@ public class DrawCommand : ICommand
 
     public void Execute()
     {
+        Debug.Log("DrawCommand");
     }
 
     public void Undo()

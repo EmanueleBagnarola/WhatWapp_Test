@@ -16,10 +16,16 @@ public class EventsManager : MonoBehaviour
     public Events.EventCardDropped OnCardDropped = null;
     public Events.EventCardPointerEnter OnCardPointerEnter = null;
     public Events.EventCardPointerExit OnCardPointerExit = null;
+    public Events.EventCardMove OnCardMove = null;
+    public Events.EventUndoCardMove OnUndoCardMove = null;
     public Events.EventCardDragging OnCardDragging = null;
-    public Events.EventCardStacked OnCardStacked = null;
+    public Events.EventCardFailMove OnCardFailMove = null;
+    public Events.EventPick OnPick = null;
     public Events.EventUndoPick OnUndoPick = null;
     public Events.EventUndoDraw OnUndoDraw = null;
+    public Events.EventDeckEmpty OnDeckEmpty = null;
+    public Events.EventReset OnReset = null;
+    public Events.EventUndoReset OnUndoReset = null;
 
     private void Awake()
     {
@@ -45,8 +51,14 @@ public class Events
     [System.Serializable] public class EventCardDropped : UnityEvent { };
     [System.Serializable] public class EventCardPointerEnter : UnityEvent<GUICard> { };
     [System.Serializable] public class EventCardPointerExit : UnityEvent { };
-    [System.Serializable] public class EventCardStacked : UnityEvent<GUICard, bool, Transform> { }
-    [System.Serializable] public class EventUndoPick : UnityEvent<GUICard> { }
+    [System.Serializable] public class EventCardMove : UnityEvent<GUICard, Transform> { };
+    [System.Serializable] public class EventUndoCardMove : UnityEvent<GUICard, Transform> { };
+    [System.Serializable] public class EventCardFailMove : UnityEvent<GUICard> { };
+    [System.Serializable] public class EventPick : UnityEvent<GUICard> { }
+    [System.Serializable] public class EventUndoPick : UnityEvent<GUICard, int> { }
     [System.Serializable] public class EventUndoDraw : UnityEvent { }
+    [System.Serializable] public class EventDeckEmpty : UnityEvent { }
+    [System.Serializable] public class EventReset : UnityEvent { }
+    [System.Serializable] public class EventUndoReset : UnityEvent { }
 }
 

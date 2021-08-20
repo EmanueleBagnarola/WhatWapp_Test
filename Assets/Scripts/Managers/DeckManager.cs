@@ -10,6 +10,14 @@ public class DeckManager : MonoBehaviour
     /// </summary>
     public static DeckManager Instance = null;
 
+    public List<CardData> DrawnCards
+    {
+        get
+        {
+            return _drawnCards;
+        }
+    }
+
     private List<CardData> _deckCards = new List<CardData>();
     private List<CardData> _drawnCards = new List<CardData>();
 
@@ -32,10 +40,20 @@ public class DeckManager : MonoBehaviour
         InitEvents();
     }
 
+    public bool IsDeckEmpty()
+    {
+        return _deckCards.Count <= 0;
+    }
+
     public CardData DrawCard()
     {
-        if (_deckCards.Count <= 0)
+        if(_deckCards.Count <= 0)
+        {
+            ICommand resetCommand = new ResetCommand();
+            GameManager.Instance.CommandHandler.AddCommand(resetCommand);
+            resetCommand.Execute();
             return null;
+        }
 
         CardData cardToDraw = _deckCards[0];
         _deckCards.RemoveAt(0);
@@ -43,6 +61,12 @@ public class DeckManager : MonoBehaviour
 
         ICommand drawCommand = new DrawCommand();
         GameManager.Instance.CommandHandler.AddCommand(drawCommand);
+        drawCommand.Execute();
+
+        if(_deckCards.Count <= 0)
+        {   
+            EventsManager.Instance.OnDeckEmpty.Invoke();
+        }
 
         return _drawnCards[_drawnCards.Count-1];
     }
@@ -52,16 +76,6 @@ public class DeckManager : MonoBehaviour
         CardData cardToUndo = _drawnCards[_drawnCards.Count - 1];
         _drawnCards.Remove(cardToUndo);
         _deckCards.Insert(0, cardToUndo);
-    }
-
-    public void PickCard(GUICard guiCard)
-    {
-        _drawnCards.Remove(guiCard.CardDataReference);
-    }
-
-    public void InsertCard(GUICard guiCard, int drawnCardsIndex)
-    {
-        _drawnCards.Insert(drawnCardsIndex, guiCard.CardDataReference);
     }
 
     /// <summary>
@@ -135,8 +149,12 @@ public class DeckManager : MonoBehaviour
     {
         EventsManager.Instance.OnStartGame.AddListener(HandleEventStartGame);
         EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
-        EventsManager.Instance.OnCardStacked.AddListener(HandleEventCardStacked);
+        EventsManager.Instance.OnCardMove.AddListener(HandleEventCardMove);
+        EventsManager.Instance.OnPick.AddListener(HandleEventPick);
+        EventsManager.Instance.OnUndoPick.AddListener(HandleEventUndoPick);
         EventsManager.Instance.OnUndoDraw.AddListener(HandleEventUndoDraw);
+        EventsManager.Instance.OnReset.AddListener(HandleEventReset);
+        EventsManager.Instance.OnUndoReset.AddListener(HandleEventUndoReset);
     }
 
     private void HandleEventStartGame()
@@ -150,24 +168,56 @@ public class DeckManager : MonoBehaviour
         _deckCards = cardsData;
     }
 
-    private void HandleEventCardStacked(GUICard guiCard, bool stacked, Transform newParent)
+    private void HandleEventCardMove(GUICard guiCard, Transform destinationParent)
     {
-        if (guiCard == null)
-            return;
-
-        if (_deckCards.Contains(guiCard.CardDataReference))
+        // Check if the moved card was in the drawn cards pile
+        if (_drawnCards.Contains(guiCard.CardDataReference))
         {
-            // Pick Command
-            Debug.Log("PICK COMMAND");
+            // Call the Pick Command to save the card drawn pile index
             ICommand pickCommand = new PickCommand(guiCard, _drawnCards.IndexOf(guiCard.CardDataReference));
             GameManager.Instance.CommandHandler.AddCommand(pickCommand);
             pickCommand.Execute();
         }
     }
 
+    private void HandleEventPick(GUICard guiCard)
+    {
+        _drawnCards.Remove(guiCard.CardDataReference);
+    }
+
+    private void HandleEventUndoPick(GUICard guiCard, int drawnCardIndex)
+    {
+        _drawnCards.Insert(drawnCardIndex, guiCard.CardDataReference);
+    }
+
     private void HandleEventUndoDraw()
     {
         UndoDrawCard();
+    }
+
+    private void HandleEventReset()
+    {
+        for (int i = 0; i < _drawnCards.Count; i++)
+        {
+            CardData drawnCard = _drawnCards[i];
+            _deckCards.Add(drawnCard);
+        }
+
+        _drawnCards.Clear();
+    }
+
+    private void HandleEventUndoReset()
+    {
+        for (int i = 0; i < _deckCards.Count; i++)
+        {
+            CardData deckCard = _deckCards[i];
+
+            _drawnCards.Add(deckCard);
+        }
+
+        _deckCards.Clear();
+
+        EventsManager.Instance.OnDeckEmpty.Invoke();
     }
     #endregion
 }

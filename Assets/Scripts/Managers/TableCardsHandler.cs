@@ -2,21 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GUIManager : MonoBehaviour
+public class TableCardsHandler : MonoBehaviour
 {
-    /// <summary>
-    /// Singleton instance reference
-    /// </summary>
-    public static GUIManager Instance = null;
-
-    public GUICard GUICardPrefab
-    {
-        get
-        {
-            return _guiCardPrefab;
-        }
-    }
-
     /// <summary>
     /// The prefab of the GUICard that shows the assigned CardData information 
     /// </summary>
@@ -32,36 +19,9 @@ public class GUIManager : MonoBehaviour
     [SerializeField]
     private Transform[] _landscapeCardsPositions = null;
 
-    private Transform _currentSpawnedCard = null;
-    private Transform _currentSpawnPosition = null;
-
-    private void Awake()
-    {
-        // Init Singleton ------
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(this);
-        }
-        //----------------------
-    }
-
     private void Start()
     {
         InitEvents(); 
-    }
-
-    private void Update()
-    {
-        //HandleSpawnCardsPlacement();
-
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            GameManager.Instance.UndoCommand();
-        }
     }
 
     private void InitGUICards(List<CardData> cardsData)
@@ -107,9 +67,6 @@ public class GUIManager : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
                 guiCard.transform.SetParent(spawnPosition.transform);
 
-                //_currentSpawnPosition = spawnPosition.transform;
-                //_currentSpawnedCard = guiCard.transform;
-
                 // Time to wait to next card to spawn
                 yield return new WaitForSeconds(0.1f);
             }
@@ -118,21 +75,6 @@ public class GUIManager : MonoBehaviour
         }
 
         EventsManager.Instance.OnCardsDealed.Invoke(cardsData);
-
-        _currentSpawnedCard = null;
-        _currentSpawnPosition = null;
-    }
-
-    /// <summary>
-    /// Handle starting cards placement animation
-    /// </summary>
-    private void HandleSpawnCardsPlacement()
-    {
-        if (_currentSpawnedCard == null)
-            return;
-
-        _currentSpawnedCard.transform.position = Vector3.Lerp(_currentSpawnedCard.transform.position, _currentSpawnPosition.position, 50 * Time.deltaTime);
-        _currentSpawnedCard.transform.SetParent(_currentSpawnPosition);
     }
 
     #region Events Handlers

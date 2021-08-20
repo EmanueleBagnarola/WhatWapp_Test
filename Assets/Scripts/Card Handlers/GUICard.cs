@@ -75,13 +75,14 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private void Start()
     {
         InitEvents();
+
+        _beginDragOverrideSorting = _canvas.overrideSorting;
+        _beginDragSortingOrder = _canvas.sortingOrder;
     }
 
     private void Update()
     {
         HandleDrag();
-
-        //HandleResetPosition();
     }
 
     /// <summary>
@@ -102,22 +103,22 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         {
             case 1:
                 _rankText.text = "A";
-                _suitImageBig.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_Jolly");
+                _suitImageSmall.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_Jolly");
                 break;
 
             case 11:
                 _rankText.text = "J";
-                _suitImageBig.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_Jack");
+                _suitImageSmall.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_Jack");
                 break;
 
             case 12:
                 _rankText.text = "Q";
-                _suitImageBig.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_Queen");
+                _suitImageSmall.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_Queen");
                 break;
 
             case 13:
                 _rankText.text = "K";
-                _suitImageBig.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_King");
+                _suitImageSmall.sprite = Resources.Load<Sprite>("Sprite_" + cardData.GetCardColor() + "_King");
                 break;
         }
 
@@ -191,10 +192,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (_currentSide == CardSide.Back)
             return;
 
-        //EventsManager.Instance.OnCardDropped.Invoke();
-        EventsManager.Instance.OnCardStacked.Invoke(null, false, null);
-        //_canvas.sortingOrder = 1;
-        //_canvas.overrideSorting = false;
+        GameManager.Instance.MoveSystem.CheckIfStackable();
 
         _canvas.overrideSorting = _beginDragOverrideSorting;
         _canvas.sortingOrder = _beginDragSortingOrder;
@@ -206,8 +204,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return;
 
         EventsManager.Instance.OnCardDropped.Invoke();
-        //_canvas.sortingOrder = 1;
-        //_canvas.overrideSorting = false;
 
         _canvas.overrideSorting = _beginDragOverrideSorting;
         _canvas.sortingOrder = _beginDragSortingOrder;
@@ -266,19 +262,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         transform.position = Vector3.Lerp(transform.position, _currentDragPosition, 20 * Time.deltaTime);
     }
 
-    //private void HandleResetPosition()
-    //{
-    //    if (_resetPosition)
-    //    {
-    //        transform.position = Vector3.Lerp(transform.position, _dragStartPosition, 50 * Time.deltaTime);
-
-    //        if (Vector3.Distance(transform.position, _dragStartPosition) <= 0.01f)
-    //        {
-    //            _resetPosition = false;
-    //        }
-    //    }
-    //}
-
     private Color GetColor(CardColor cardColor)
     {
         if (cardColor == CardColor.Red)
@@ -294,12 +277,13 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private void InitEvents()
     {
         EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
-        EventsManager.Instance.OnCardStacked.AddListener(HandleEventCardStacked);
+        EventsManager.Instance.OnCardMove.AddListener(HandleCardMove);
+        EventsManager.Instance.OnCardFailMove.AddListener(HandleCardFailMove);
     }
 
     private void HandleEventCardsDealed(List<CardData> cardsData)
     {
-        if (!transform.parent.name.Contains("temp")) 
+        if (!transform.parent.name.Contains("temp"))
             return;
 
         // Disable the temp object used to place the card using move animation
@@ -308,30 +292,29 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         transform.SetParent(_currentParent);
     }
 
-    private void HandleEventCardStacked(GUICard guiCard, bool stacked, Transform newParent)
+    private void HandleCardMove(GUICard guiCard, Transform destinationParent)
     {
-        // If the stack check failed on the current dragging card, reset its position
-        if (!stacked && _dragging)
-        {
-            //_resetPosition = true;
-            iTween.MoveTo(gameObject, _dragStartPosition, 0.5f);
-        }
+        // Check if the the card moved is this
+        if (guiCard != this)
+            return;
 
-        // Execute the move command
-        if (stacked && guiCard == this)
-        {
-            ICommand moveCommand = new MoveCommand(transform, transform.parent, newParent, _cardArea);
-            GameManager.Instance.CommandHandler.AddCommand(moveCommand);
-
-            moveCommand.Execute();
-
-            // TODO: check with UNDO
-            _canvas.overrideSorting = false;
-        }
-
+        _canvas.sortingOrder = 1;
+        _canvas.overrideSorting = false;
         _canvasGroup.blocksRaycasts = true;
         _dragging = false;
+    }
 
+    private void HandleCardFailMove(GUICard guiCard)
+    {
+        if (guiCard != this)
+            return;
+
+        iTween.MoveTo(gameObject, _dragStartPosition, 0.5f);
+
+        _canvas.overrideSorting = _beginDragOverrideSorting;
+        _canvas.sortingOrder = _beginDragSortingOrder;
+        _canvasGroup.blocksRaycasts = true;
+        _dragging = false;
     }
     #endregion
 }

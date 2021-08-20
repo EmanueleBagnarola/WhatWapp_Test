@@ -25,11 +25,19 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public CommandHandler CommandHandler
+    public MoveSystem MoveSystem
     {
         get
         {
-            return _commandHandler;
+            return _moveSystem;
+        }
+    }
+
+    public CommandSystem CommandHandler
+    {
+        get
+        {
+            return _commandSystem;
         }
     }
 
@@ -38,7 +46,10 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private GameState _currentGameState = GameState.Running;
 
-    private CommandHandler _commandHandler = new CommandHandler();
+    private MoveSystem _moveSystem;
+    private CommandSystem _commandSystem;
+
+    private bool _undoInputTest = true;
 
     private void Awake()
     {
@@ -60,12 +71,31 @@ public class GameManager : MonoBehaviour
 
         yield return new WaitForSeconds(1);
 
+        InitSystems();
+
         StartGame();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.U) && _undoInputTest)
+        {
+            GameManager.Instance.UndoCommand();
+            _undoInputTest = false;
+            Invoke(nameof(ResetUndoInput), 0.43f);
+        }
     }
 
     public void UndoCommand()
     {
-        _commandHandler.UndoCommand();
+        _commandSystem.UndoCommand();
+    }
+
+    private void InitSystems()
+    {
+        _moveSystem = new MoveSystem();
+        _commandSystem = new CommandSystem();
+
     }
 
     /// <summary>
@@ -87,4 +117,10 @@ public class GameManager : MonoBehaviour
     {
         EventsManager.Instance.OnStartGame.Invoke();
     }
+
+    private void ResetUndoInput()
+    {
+        _undoInputTest = true;
+    }
+
 }
