@@ -155,6 +155,11 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _canvas.sortingOrder = sortingOrder;
     }
 
+    public void EnableRaycast(bool value)
+    {
+        _canvasGroup.blocksRaycasts = value;
+    }
+
     #region Event System Methods
     public void OnDrag(PointerEventData eventData)
     {

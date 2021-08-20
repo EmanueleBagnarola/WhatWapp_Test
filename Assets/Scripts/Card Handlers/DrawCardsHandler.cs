@@ -52,10 +52,11 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         if (_pileCounter >= 3)
         {
             guiCardToInsert = _guiCardsPile[_pileCounter];
-            guiCardToInsert.gameObject.SetActive(true);
             guiCardToInsert.SetCardData(cardToInsert, CardArea.DrawPile);
+            guiCardToInsert.gameObject.SetActive(true);
             guiCardToInsert.FlipCard(CardSide.Front);
             guiCardToInsert.SetSortingOrder(4);
+            guiCardToInsert.EnableRaycast(true);
             iTween.MoveTo(guiCardToInsert.gameObject, _drawPilePositions[2].position, 0.4f);
         }
         else
@@ -65,6 +66,7 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
             guiCardToInsert.SetCardData(cardToInsert, CardArea.DrawPile);
             guiCardToInsert.FlipCard(CardSide.Front);
             guiCardToInsert.SetSortingOrder(_pileCounter + 1);
+            guiCardToInsert.EnableRaycast(true);
             iTween.MoveTo(guiCardToInsert.gameObject, _drawPilePositions[_pileCounter].position, 0.4f);
         }
 
@@ -87,16 +89,19 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
             iTween.MoveTo(hiddenCard.gameObject, _drawPilePositions[0].position, 0.1f);
             hiddenCard.gameObject.SetActive(true);
-            hiddenCard.FlipCard(CardSide.Front);
             hiddenCard.SetCardData(_hiddenCards[_hiddenCards.Count - 1], CardArea.DrawPile);
-            _hiddenCards.Remove(hiddenCard.CardDataReference);
+            hiddenCard.FlipCard(CardSide.Front);
             hiddenCard.SetSortingOrder(1);
+            hiddenCard.EnableRaycast(false);
+            _hiddenCards.Remove(hiddenCard.CardDataReference);
 
             _guiCardsPile[0].SetSortingOrder(2);
+            _guiCardsPile[0].EnableRaycast(false);
             iTween.MoveTo(_guiCardsPile[0].gameObject, _drawPilePositions[1].position, 0.4f);
+
             _guiCardsPile[1].SetSortingOrder(3);
+            _guiCardsPile[1].EnableRaycast(true);
             iTween.MoveTo(_guiCardsPile[1].gameObject, _drawPilePositions[2].position, 0.4f);
-            _guiCardsPile[1].SetSortingOrder(3);
 
             /// Shift the last card reference in the list to be the first
             GUICard listCardShift = _guiCardsPile[_guiCardsPile.Count - 1];
@@ -106,6 +111,11 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         else
         {
             _pileCounter--;
+
+            if(_pileCounter > 0)
+            {
+                _guiCardsPile[_pileCounter -1].EnableRaycast(true);
+            }
         }
     }
 
@@ -114,8 +124,11 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         if (_pileCounter >= 3)
         {
             _guiCardsPile[1].SetSortingOrder(1);
+            _guiCardsPile[1].EnableRaycast(false);
             iTween.MoveTo(_guiCardsPile[1].gameObject, _drawPilePositions[0].position, 0.4f);
+
             _guiCardsPile[2].SetSortingOrder(2);
+            _guiCardsPile[2].EnableRaycast(false);
             iTween.MoveTo(_guiCardsPile[2].gameObject, _drawPilePositions[1].position, 0.4f);
 
             GUICard cardToHide = _guiCardsPile[0];
@@ -127,6 +140,11 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         }
         else
         {
+            if (_pileCounter > 0)
+            {
+                _guiCardsPile[_pileCounter - 1].EnableRaycast(false);   
+            }
+
             _pileCounter++;
         }
     }

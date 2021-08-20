@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class ColumnHandler : MonoBehaviour
+public class TablePileHandler : MonoBehaviour, IDropHandler
 {
     private void Start()
     {
@@ -12,30 +13,20 @@ public class ColumnHandler : MonoBehaviour
     [SerializeField]
     private List<GUICard> _guiCards = new List<GUICard>();
 
-    //public void AddCard(GUICard _guiCard)
-    //{
-    //    _guiCards.Add(_guiCard);
-    //}
-
-    //public void RemoveCard(GUICard _guiCard)
-    //{
-    //    _guiCards.Remove(_guiCard);
-    //}
-
-    public void CheckFirstCard()
+    private IEnumerator FillGUICardsList()
     {
-        if (_guiCards.Count <= 0)
-            return;
+        yield return new WaitForSeconds(0.1f);
 
-        GUICard firstCard = _guiCards[_guiCards.Count - 1];
+        GUICard[] guiCardsArray = transform.GetComponentsInChildren<GUICard>();
 
-        if (firstCard.CurrentSide == CardSide.Back)
+        for (int i = 0; i < guiCardsArray.Length; i++)
         {
-            firstCard.FlipCard(CardSide.Front);
+            GUICard guiCard = guiCardsArray[i];
+            _guiCards.Add(guiCard);
         }
     }
 
-    public void CheckUndoCommand(CardData undoCard, MoveUndoType columnAction)
+    private void CheckUndoCommand(CardData undoCard, MoveUndoType columnAction)
     {
         if (_guiCards.Count <= 0)
             return;
@@ -46,7 +37,7 @@ public class ColumnHandler : MonoBehaviour
         {
             case MoveUndoType.Add:
 
-                if(_guiCards.Count > 1)
+                if (_guiCards.Count > 1)
                 {
                     // Check if the second card is front sided too.
                     GUICard secondCard = _guiCards[_guiCards.Count - 2];
@@ -74,23 +65,18 @@ public class ColumnHandler : MonoBehaviour
         }
     }
 
-    private IEnumerator FillGUICardsList()
+    #region Event System Handlers
+    public void OnDrop(PointerEventData eventData)
     {
-        yield return new WaitForSeconds(0.1f);
-
-        GUICard[] guiCardsArray = transform.GetComponentsInChildren<GUICard>();
-
-        for (int i = 0; i < guiCardsArray.Length; i++)
-        {
-            GUICard guiCard = guiCardsArray[i];
-            _guiCards.Add(guiCard);
-        }
+        throw new System.NotImplementedException();
     }
+    #endregion
 
     #region Events Handlers
     private void InitEvents()
     {
         EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
+        EventsManager.Instance.OnCardDragging.AddListener(HandleEventCardDragging);
         EventsManager.Instance.OnCardMove.AddListener(HandleEventCardMove);
         EventsManager.Instance.OnUndoCardMove.AddListener(HandleEventUndoCardMove);
     }
@@ -100,16 +86,30 @@ public class ColumnHandler : MonoBehaviour
         StartCoroutine(FillGUICardsList());
     }
 
+    private void HandleEventCardDragging(GUICard guiCard)
+    {
+
+    }
+
     private void HandleEventCardMove(GUICard guiCard, Transform destinationParent)
     {
         if (_guiCards.Contains(guiCard))
         {
             _guiCards.Remove(guiCard);
-            CheckFirstCard();
+
+            if (_guiCards.Count <= 0)
+                return;
+
+            GUICard firstCard = _guiCards[_guiCards.Count - 1];
+
+            if (firstCard.CurrentSide == CardSide.Back)
+            {
+                firstCard.FlipCard(CardSide.Front);
+            }
         }
         else
         {
-            if (destinationParent.GetComponent<ColumnHandler>() == this)
+            if (destinationParent.GetComponent<TablePileHandler>() == this)
             {
                 _guiCards.Add(guiCard);
                 guiCard.transform.SetParent(transform);
@@ -129,7 +129,7 @@ public class ColumnHandler : MonoBehaviour
             CheckUndoCommand(guiCard.CardDataReference, MoveUndoType.Remove);
         }
 
-        if(sourceParent.GetComponent<ColumnHandler>() == this)
+        if(sourceParent.GetComponent<TablePileHandler>() == this)
         {
             CheckUndoCommand(guiCard.CardDataReference, MoveUndoType.Add);
 

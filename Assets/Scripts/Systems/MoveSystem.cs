@@ -58,7 +58,6 @@ public class MoveSystem
 
         ICommand moveCommand = new MoveCommand(_draggingCard, _pointerEnterCard.transform.parent);
         GameManager.Instance.CommandHandler.AddCommand(moveCommand);
-
         moveCommand.Execute();
 
         _draggingCard = null;
