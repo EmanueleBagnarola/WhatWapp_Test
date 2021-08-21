@@ -324,6 +324,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private void MoveToEndDragPosition()
     {
         iTween.MoveTo(gameObject, _dragStartPosition, 0.5f);
+
+        if (_isAppended)
+            _isAppended = false;
     }
 
     #region Events Handlers
@@ -332,7 +335,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
         EventsManager.Instance.OnCardMove.AddListener(HandleCardMove);
         EventsManager.Instance.OnCardFailMove.AddListener(HandleCardFailMove);
-        EventsManager.Instance.OnCardDropped.AddListener(HandleEventCardDropped);
     }
 
     private void HandleEventCardsDealed(List<CardData> cardsData)
@@ -360,16 +362,19 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     private void HandleCardFailMove(GUICard guiCard)
     {
-        if (_isAppended)
-        {
-            MoveToEndDragPosition();
-            _isAppended = false;
-        }
-
         if (guiCard != this)
             return;
 
         MoveToEndDragPosition();
+
+        if(_appendedCards.Count > 0)
+        {
+            for (int i = 0; i < _appendedCards.Count; i++)
+            {
+                GUICard appendedCard = _appendedCards[i];
+                appendedCard.MoveToEndDragPosition();
+            }
+        }
 
         _appendedCards.Clear();
 
@@ -377,11 +382,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _canvas.sortingOrder = _beginDragSortingOrder;
         _canvasGroup.blocksRaycasts = true;
         _dragging = false;
-    }
-
-    private void HandleEventCardDropped()
-    {
-
     }
     #endregion
 }

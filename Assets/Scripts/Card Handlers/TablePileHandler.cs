@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TablePileHandler : MonoBehaviour, IDropHandler
+public class TablePileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     private void Start()
     {
@@ -66,9 +66,20 @@ public class TablePileHandler : MonoBehaviour, IDropHandler
     }
 
     #region Event System Handlers
-    public void OnDrop(PointerEventData eventData)
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        if(_guiCards.Count <= 0)
+        {
+            EventsManager.Instance.OnTablePilePointerEnter.Invoke(this);
+        }
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (_guiCards.Count <= 0)
+        {
+            EventsManager.Instance.OnTablePilePointerExit.Invoke();
+        }
     }
     #endregion
 

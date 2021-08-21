@@ -33,33 +33,40 @@ public class CommandSystem
             _index--;
         }
 
-        MoveCommand moveCommand = (MoveCommand)lastCommand;
-
-        if(lastCommand is MoveCommand && moveCommand.IsMultipleMove == false)
-            return;
-
-        else
+        if(lastCommand is MoveCommand)
         {
-            for (int i = _commandList.Count - 1; i > 0; i--)
+            MoveCommand moveCommand = (MoveCommand)lastCommand;
+
+            if (moveCommand.IsMultipleMove == false)
+                return;
+
+            else
             {
-                MoveCommand multipleMoveCommand = _commandList[i] as MoveCommand;
-                if (multipleMoveCommand.IsMultipleMove)
+                for (int i = _commandList.Count - 1; i > 0; i--)
                 {
-                    multipleMoveCommand.Undo();
-                    _commandList.Remove(multipleMoveCommand);
-                    _index --;
+                    MoveCommand multipleMoveCommand = _commandList[i] as MoveCommand;
+                    if (multipleMoveCommand.IsMultipleMove)
+                    {
+                        multipleMoveCommand.Undo();
+                        _commandList.Remove(multipleMoveCommand);
+                        _index--;
+                    }
                 }
             }
         }
 
-
-        if (_index > 0)
+        // If last undo command was a pick command, undo also the move command previous to it, called by the card move
+        if (lastCommand is PickCommand)
         {
-            if (_commandList[_index - 1] is MoveCommand)
+            if (_index > 0)
             {
-                _commandList[_index - 1].Undo();
-                _commandList.RemoveAt(_index - 1);
-                _index--;
+                if (_commandList[_index - 1] is MoveCommand)
+                {
+                    _commandList[_index - 1].Undo();
+                    _commandList.RemoveAt(_index - 1);
+                    _index--;
+                }
+
             }
         }
     }

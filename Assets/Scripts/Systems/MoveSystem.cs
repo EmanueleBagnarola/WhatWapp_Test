@@ -6,6 +6,10 @@ public class MoveSystem
 {
     private GUICard _draggingCard = null;
     private GUICard _pointerEnterCard = null;
+    private TablePileHandler _pointerEnterTablePile = null;
+
+    private CardData draggingCardData = null;
+    private CardData pointerEnterCardData = null;
 
     public MoveSystem()
     {
@@ -14,14 +18,17 @@ public class MoveSystem
 
     public void CheckIfStackable()
     {
-        if (_draggingCard == null || _pointerEnterCard == null)
+
+        if (_draggingCard == null || _pointerEnterCard == null && _pointerEnterTablePile == null)
         {
-            CallCardStackFail();
+            CallFailMove();
             return;
         }
 
-        CardData draggingCardData = _draggingCard.CardDataReference;
-        CardData pointerEnterCardData = _pointerEnterCard.CardDataReference;
+        draggingCardData = _draggingCard.CardDataReference;
+
+        if(_pointerEnterCard != null) 
+            pointerEnterCardData = _pointerEnterCard.CardDataReference;
 
         //Debug.Log("Trying to drop [" + draggingCardData.Rank + " of " + draggingCardData.Suit + "] on " +
         //"" + "[" + pointerEnterCardData.Rank + " of " + pointerEnterCardData.Suit + "]");
@@ -44,51 +51,49 @@ public class MoveSystem
         // Check if the player is trying to stack a card on top of the card it's already stacked on
         if (_draggingCard.transform.parent == _pointerEnterCard.transform.parent)
         {
-            Debug.Log("CallCardStackFail");
-            CallCardStackFail();
+            CallFailMove();
             return;
         }
 
         // Check if the player is trying to stack a table card on a draw pile card
         if(_pointerEnterCard.CardArea == CardArea.DrawPile)
         {
-            CallCardStackFail();
+            CallFailMove();
             return;
         }
-
 
         // Check for multiple cards dragging
         if (_draggingCard.AppendedCards.Count > 0)
         {
-            MoveCommand(_draggingCard, true);
+            MoveCommand(_draggingCard, _pointerEnterCard.transform.parent, true);
 
             for (int i = 0; i < _draggingCard.AppendedCards.Count; i++)
             {
                 GUICard appendedCard = _draggingCard.AppendedCards[i];
 
-                MoveCommand(appendedCard, true);
+                MoveCommand(appendedCard, _pointerEnterCard.transform.parent, true);
 
                 _draggingCard.ReleaseAppendedCard(appendedCard);
             }
         }
         else
         {
-            MoveCommand(_draggingCard, false);
+            MoveCommand(_draggingCard, _pointerEnterCard.transform.parent, false);
         }
 
         _draggingCard = null;
         _pointerEnterCard = null;
     }
 
-    private void MoveCommand(GUICard movedCard, bool isMultipleMove)
+    private void MoveCommand(GUICard movedCard, Transform destinationParent, bool isMultipleMove)
     {
         Debug.Log("Added MoveCommand");
-        ICommand moveCommand = new MoveCommand(movedCard, _pointerEnterCard.transform.parent, isMultipleMove);
+        ICommand moveCommand = new MoveCommand(movedCard, destinationParent, isMultipleMove);
         GameManager.Instance.CommandHandler.AddCommand(moveCommand);
         moveCommand.Execute();
     }
 
-    private void CallCardStackFail()
+    private void CallFailMove()
     {
         EventsManager.Instance.OnCardFailMove.Invoke(_draggingCard);
         _draggingCard = null;
