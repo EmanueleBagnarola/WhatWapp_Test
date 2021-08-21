@@ -9,12 +9,16 @@ public class CommandSystem
     public void AddCommand(ICommand command)
     {
         _commandList.Add(command);
+
+        EventsManager.Instance.OnCommand.Invoke();
     }
 
     public void UndoCommand()
     {
         if (_commandList.Count == 0)
             return;
+
+        EventsManager.Instance.OnCommand.Invoke();
 
         ICommand lastCommand = _commandList[_commandList.Count - 1];
 
@@ -65,6 +69,12 @@ public class CommandSystem
                 _commandList[_commandList.Count - 2].Undo();
                 _commandList.Remove(_commandList[_commandList.Count - 2]);
             }
+        }
+
+        else
+        {
+            lastCommand.Undo();
+            _commandList.Remove(lastCommand);
         }
     }
 }

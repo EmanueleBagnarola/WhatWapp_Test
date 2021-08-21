@@ -28,6 +28,9 @@ public class EventsManager : MonoBehaviour
     public Events.EventDeckEmpty OnDeckEmpty = null;
     public Events.EventReset OnReset = null;
     public Events.EventUndoReset OnUndoReset = null;
+    public Events.EventScore OnScore = null;
+    public Events.EventUndoScore OnUndoScore = null;
+    public Events.EventCommand OnCommand = null;
 
     private void Awake()
     {
@@ -64,5 +67,8 @@ public class Events
     [System.Serializable] public class EventDeckEmpty : UnityEvent { }
     [System.Serializable] public class EventReset : UnityEvent { }
     [System.Serializable] public class EventUndoReset : UnityEvent { }
+    [System.Serializable] public class EventScore : UnityEvent<int> { }
+    [System.Serializable] public class EventUndoScore : UnityEvent<int> { }
+    [System.Serializable] public class EventCommand : UnityEvent { };
 }
 

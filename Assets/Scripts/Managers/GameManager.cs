@@ -49,8 +49,6 @@ public class GameManager : MonoBehaviour
     private MoveSystem _moveSystem;
     private CommandSystem _commandSystem;
 
-    private bool _undoInputTest = true;
-
     private void Awake()
     {
         // Init Singleton ------
@@ -74,16 +72,6 @@ public class GameManager : MonoBehaviour
         InitSystems();
 
         StartGame();
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.U) && _undoInputTest)
-        {
-            GameManager.Instance.UndoCommand();
-            _undoInputTest = false;
-            Invoke(nameof(ResetUndoInput), 0.43f);
-        }
     }
 
     public void UndoCommand()
@@ -117,10 +105,4 @@ public class GameManager : MonoBehaviour
     {
         EventsManager.Instance.OnStartGame.Invoke();
     }
-
-    private void ResetUndoInput()
-    {
-        _undoInputTest = true;
-    }
-
 }
