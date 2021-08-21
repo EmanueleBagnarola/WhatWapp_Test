@@ -3,15 +3,68 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TablePileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    private void Start()
+    public CardArea CardArea
     {
-        InitEvents();
+        get
+        {
+            return _cardArea;
+        }
+    }
+
+    public CardSuit CardSuit
+    {
+        get
+        {
+            return _cardSuit;
+        }
     }
 
     [SerializeField]
     private List<GUICard> _guiCards = new List<GUICard>();
+
+    [SerializeField]
+    private CardArea _cardArea = CardArea.Table;
+
+    [SerializeField, Header("If this is a Ace pile")]
+    private CardSuit _cardSuit = CardSuit.Empty;
+
+    [SerializeField]
+    private Transform _overrideParent = null;
+
+    private void Start()
+    {
+        InitEvents();
+
+        if (_overrideParent == null)
+            _overrideParent = transform;
+    }
+
+    public bool CheckAcePile(GUICard cardToMove)
+    {
+        CardData cardDataToMove = cardToMove.CardDataReference;
+
+        if (cardDataToMove.Suit != _cardSuit)
+            return false;
+
+        if (_guiCards.Count <= 0)
+        {
+            if (cardDataToMove.Rank != 1)
+                return false;
+        }
+
+        if(_guiCards.Count > 0)
+        {
+            CardData lastPileCard = _guiCards[_guiCards.Count - 1].CardDataReference;
+
+            if (cardDataToMove.Rank - lastPileCard.Rank != 1)
+                return false;
+        }
+
+        cardToMove.SetCardArea(CardArea.AcesPile);
+        return true;
+    }
 
     private IEnumerator FillGUICardsList()
     {
@@ -70,7 +123,7 @@ public class TablePileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if(_guiCards.Count <= 0)
         {
-            EventsManager.Instance.OnTablePilePointerEnter.Invoke(this);
+            EventsManager.Instance.OnPilePointerEnter.Invoke(this);
         }
     }
 
@@ -78,7 +131,7 @@ public class TablePileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (_guiCards.Count <= 0)
         {
-            EventsManager.Instance.OnTablePilePointerExit.Invoke();
+            EventsManager.Instance.OnPilePointerExit.Invoke();
         }
     }
     #endregion
@@ -137,13 +190,13 @@ public class TablePileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExi
         }
         else
         {
-            if (destinationParent.GetComponent<TablePileHandler>() == this)
+            if (destinationParent.GetComponent<PileHandler>() == this || destinationParent.GetComponentInParent<PileHandler>() == this)
             {
                 _guiCards.Add(guiCard);
-                guiCard.transform.SetParent(transform);
+                guiCard.transform.SetParent(_overrideParent);
 
-                // Set the guiCard CardArea as Table area
-                guiCard.SetCardArea(CardArea.Table);
+                // Set the guiCard CardArea as this Pile Card Area
+                guiCard.SetCardArea(_cardArea);
             }
         }
     }
@@ -157,12 +210,12 @@ public class TablePileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExi
             CheckUndoCommand(guiCard.CardDataReference, MoveUndoType.Remove);
         }
 
-        if(sourceParent.GetComponent<TablePileHandler>() == this)
+        if(sourceParent.GetComponent<PileHandler>() == this)
         {
             CheckUndoCommand(guiCard.CardDataReference, MoveUndoType.Add);
 
             _guiCards.Add(guiCard);
-            guiCard.transform.SetParent(transform);
+            guiCard.transform.SetParent(_overrideParent);
 
             guiCard.SetCardArea(CardArea.Table);
         }

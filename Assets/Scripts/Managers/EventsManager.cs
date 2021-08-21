@@ -16,8 +16,8 @@ public class EventsManager : MonoBehaviour
     public Events.EventCardDropped OnCardDropped = null;
     public Events.EventCardPointerEnter OnCardPointerEnter = null;
     public Events.EventCardPointerExit OnCardPointerExit = null;
-    public Events.EventTablePilePointerEnter OnTablePilePointerEnter = null;
-    public Events.EventTablePilePointerExit OnTablePilePointerExit = null;
+    public Events.EventPilePointerEnter OnPilePointerEnter = null;
+    public Events.EventPilePointerExit OnPilePointerExit = null;
     public Events.EventCardMove OnCardMove = null;
     public Events.EventUndoCardMove OnUndoCardMove = null;
     public Events.EventCardDragging OnCardDragging = null;
@@ -53,8 +53,8 @@ public class Events
     [System.Serializable] public class EventCardDropped : UnityEvent { };
     [System.Serializable] public class EventCardPointerEnter : UnityEvent<GUICard> { };
     [System.Serializable] public class EventCardPointerExit : UnityEvent { };
-    [System.Serializable] public class EventTablePilePointerEnter : UnityEvent<TablePileHandler> { };
-    [System.Serializable] public class EventTablePilePointerExit : UnityEvent { };
+    [System.Serializable] public class EventPilePointerEnter : UnityEvent<PileHandler> { };
+    [System.Serializable] public class EventPilePointerExit : UnityEvent { };
     [System.Serializable] public class EventCardMove : UnityEvent<GUICard, Transform> { };
     [System.Serializable] public class EventUndoCardMove : UnityEvent<GUICard, Transform> { };
     [System.Serializable] public class EventCardFailMove : UnityEvent<GUICard> { };

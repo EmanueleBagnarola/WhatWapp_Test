@@ -161,6 +161,12 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     public void SetSortingOrder(int sortingOrder)
     {
+        if (sortingOrder < 0)
+        {
+            _canvas.overrideSorting = false;
+            return;
+        }
+
         _canvas.overrideSorting = true;
         _canvas.sortingOrder = sortingOrder;
     }
@@ -230,10 +236,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (_currentSide == CardSide.Back)
             return;
 
-        GameManager.Instance.MoveSystem.CheckIfStackable();
-
-        _canvas.overrideSorting = _beginDragOverrideSorting;
-        _canvas.sortingOrder = _beginDragSortingOrder;
+        GameManager.Instance.MoveSystem.CheckMove();
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -242,9 +245,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return;
 
         EventsManager.Instance.OnCardDropped.Invoke();
-
-        _canvas.overrideSorting = _beginDragOverrideSorting;
-        _canvas.sortingOrder = _beginDragSortingOrder;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -353,7 +353,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         // Check if the the card moved is this
         if (guiCard != this)
             return;
-
+        
         _canvas.overrideSorting = false;
         _canvas.sortingOrder = 1;
         _canvasGroup.blocksRaycasts = true;
