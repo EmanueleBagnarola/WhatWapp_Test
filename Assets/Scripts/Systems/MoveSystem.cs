@@ -118,7 +118,6 @@ public class MoveSystem
             return;
         }
 
-
         // Check for multiple cards dragging
         if (_draggingCard.AppendedCards.Count > 0)
         {
@@ -129,9 +128,10 @@ public class MoveSystem
                 GUICard appendedCard = _draggingCard.AppendedCards[i];
 
                 MoveCommand(appendedCard, _destinationParent, true);
-
-                _draggingCard.ReleaseAppendedCard(appendedCard);
+                //_draggingCard.ReleaseAppendedCard(appendedCard);
             }
+
+            _draggingCard.AppendedCards.Clear();
         }
         else
         {

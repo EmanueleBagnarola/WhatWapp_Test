@@ -167,7 +167,6 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
             hangingCard.SetSortingOrder(5 + draggingCardIndex+1);
 
-            //hangingCard.transform.SetParent(guiCard.transform);
             guiCard.AppendDraggingCards(hangingCard);
         }
     }

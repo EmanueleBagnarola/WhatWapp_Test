@@ -44,6 +44,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private CardArea _cardArea = CardArea.Table;
     private CardData _currentCardData = null;
     private Transform _currentParent = null;
+    [SerializeField]
     private List<GUICard> _appendedCards = new List<GUICard>();
     private bool _isAppended = false;
     #endregion
@@ -196,6 +197,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     public void ReleaseAppendedCard(GUICard cardToRelease)
     {
+        cardToRelease.SetSortingOrder(-1);
         _appendedCards.Remove(cardToRelease);
     }
 
@@ -361,7 +363,16 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         // Check if the the card moved is this
         if (guiCard != this)
             return;
-        
+
+        if (_appendedCards.Count > 0)
+        {
+            for (int i = 0; i < _appendedCards.Count; i++)
+            {
+                GUICard appendedCard = _appendedCards[i];
+                appendedCard.SetSortingOrder(-1);
+            }
+        }
+
         _canvas.overrideSorting = false;
         _canvas.sortingOrder = 1;
         _canvasGroup.blocksRaycasts = true;
@@ -382,9 +393,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
                 GUICard appendedCard = _appendedCards[i];
                 appendedCard.MoveToEndDragPosition();
             }
+
+            _appendedCards.Clear();
         }
 
-        _appendedCards.Clear();
 
         _canvas.overrideSorting = _beginDragOverrideSorting;
         _canvas.sortingOrder = _beginDragSortingOrder;
