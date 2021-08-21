@@ -553,7 +553,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 302717615454361474, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Name
-      value: Column  (6)
+      value: Table Pile
       objectReference: {fileID: 0}
     - target: {fileID: 302717615454361475, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Pivot.x
@@ -907,8 +907,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 80, y: 80}
+  m_AnchoredPosition: {x: 0, y: 0.0000009536743}
+  m_SizeDelta: {x: 73.4204, y: 58.7363}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &474772013
 MonoBehaviour:
@@ -1274,7 +1274,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0.989954, b: 0, a: 1}
+  m_Color: {r: 1, g: 0.8291087, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1551,6 +1551,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e13a93caf55f474fbb144bbd45d311e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _scoreText: {fileID: 1505866981}
   _movesText: {fileID: 1296492819}
 --- !u!1001 &685556379
 PrefabInstance:
@@ -1561,7 +1562,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 302717615454361474, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Name
-      value: Column  (2)
+      value: Table Pile
       objectReference: {fileID: 0}
     - target: {fileID: 302717615454361475, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Pivot.x
@@ -1663,7 +1664,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 302717615454361474, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Name
-      value: Column  (5)
+      value: Table Pile
       objectReference: {fileID: 0}
     - target: {fileID: 302717615454361475, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Pivot.x
@@ -1760,7 +1761,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 302717615454361474, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Name
-      value: Column  (4)
+      value: Table Pile
       objectReference: {fileID: 0}
     - target: {fileID: 302717615454361475, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Pivot.x
@@ -1862,7 +1863,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 302717615454361474, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Name
-      value: Column  (1)
+      value: Table Pile
       objectReference: {fileID: 0}
     - target: {fileID: 302717615454361475, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Pivot.x
@@ -2279,7 +2280,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 302717615454361474, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Name
-      value: Column  (3)
+      value: Table Pile
       objectReference: {fileID: 0}
     - target: {fileID: 302717615454361475, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Pivot.x
@@ -2577,7 +2578,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'MOSSE
 
-    1'
+    0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
@@ -3476,7 +3477,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 302717615454361474, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Name
-      value: Column
+      value: Table Pile
       objectReference: {fileID: 0}
     - target: {fileID: 302717615454361475, guid: be8d8d859a90d8743b90e97afbc4f188, type: 3}
       propertyPath: m_Pivot.x

@@ -8,9 +8,13 @@ public class UIManager : MonoBehaviour
     public static UIManager Instance = null;
 
     [SerializeField]
+    private TextMeshProUGUI _scoreText = null;
+    [SerializeField]
     private TextMeshProUGUI _movesText = null;
 
+    private int _currentScoreCount = 0;
     private int _currentMovesCount = 0;
+
     private bool _canUndo = true;
 
     private void Awake()
@@ -31,6 +35,22 @@ public class UIManager : MonoBehaviour
         {
             _currentMovesCount++;
             _movesText.text = "MOSSE\n" + _currentMovesCount.ToString();
+        });
+
+        EventsManager.Instance.OnScore.AddListener((score) =>
+        {
+            _currentScoreCount += score;
+            _scoreText.text = "PUNTI\n" + _currentScoreCount.ToString();
+        });
+
+        EventsManager.Instance.OnUndoScore.AddListener((score) =>
+        {
+            _currentScoreCount -= score;
+
+            if (_currentScoreCount < 0)
+                _currentScoreCount = 0;
+
+            _scoreText.text = "PUNTI\n" + _currentScoreCount.ToString();
         });
     }
 

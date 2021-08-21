@@ -13,7 +13,9 @@ public class MoveCommand : ICommand
     private Transform _sourceParent = null;
     private CardArea _sourceArea;
 
-    public MoveCommand(GUICard guiCard, Transform destinationParent, bool _isMultipleMove)
+    private int _moveScore = 0;
+
+    public MoveCommand(GUICard guiCard, Transform destinationParent, bool _isMultipleMove, int moveScore)
     {
         _guiCard = guiCard;
         _destinationParent = destinationParent;
@@ -22,16 +24,20 @@ public class MoveCommand : ICommand
         _sourceArea = guiCard.CardArea;
 
         IsMultipleMove = _isMultipleMove;
+
+        _moveScore = moveScore;
     }
 
     public void Execute()
     {
         EventsManager.Instance.OnCardMove.Invoke(_guiCard, _destinationParent);
+        EventsManager.Instance.OnScore.Invoke(_moveScore);
     }
 
     public void Undo()
     {
         EventsManager.Instance.OnUndoCardMove.Invoke(_guiCard, _sourceParent);
+        EventsManager.Instance.OnUndoScore.Invoke(_moveScore);
         _guiCard.SetCardArea(_sourceArea);
     }
 }

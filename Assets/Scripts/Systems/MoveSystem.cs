@@ -57,25 +57,25 @@ public class MoveSystem
                     return;
                 }
 
-                Debug.Log("MOVE ON ACES PILE");
-                MoveCommand(_draggingCard, _destinationParent, false);
+                Debug.Log("CARTA SU PILA ASSI");
+                MoveCommand(_draggingCard, _destinationParent, false, 10);
                 return;
             }
 
             //Check if cards that user is trying to stack are of the same color
-            //if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
-            //    || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
-            //{
-            //    CallFailMove();
-            //    return;
-            //}
+            if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
+                || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
+            {
+                CallFailMove();
+                return;
+            }
 
-            //// Check if rank's cards that user is trying to stack are compatible
-            //if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
-            //{
-            //    CallFailMove();
-            //    return;
-            //}
+            // Check if rank's cards that user is trying to stack are compatible
+            if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
+            {
+                CallFailMove();
+                return;
+            }
         } 
 
         // Check empty Table Pile Move
@@ -95,14 +95,20 @@ public class MoveSystem
 
             if(_pointerEnterPile.CardArea == CardArea.AcesPile)
             {
-                if(_pointerEnterPile.CardSuit != _draggingCard.CardDataReference.Suit)
+                if(_pointerEnterPile.CardSuit != draggingCardData.Suit)
                 {
                     CallFailMove();
                     return;
                 }
-                if(_draggingCard.CardDataReference.Rank != 1)
+                if(draggingCardData.Rank != 1)
                 {
                     CallFailMove();
+                    return;
+                }
+                else
+                {
+                    Debug.Log("PRIMO ASSO POSIZIONATO");
+                    MoveCommand(_draggingCard, _destinationParent, false, 15);
                     return;
                 }
             }
@@ -121,13 +127,18 @@ public class MoveSystem
         // Check for multiple cards dragging
         if (_draggingCard.AppendedCards.Count > 0)
         {
-            MoveCommand(_draggingCard, _destinationParent, true);
+            int moveScore = 0;
+
+            if (_draggingCard.IsLastFrontCardInPile())
+                moveScore = 5;
+
+            MoveCommand(_draggingCard, _destinationParent, true, moveScore);
 
             for (int i = 0; i < _draggingCard.AppendedCards.Count; i++)
             {
                 GUICard appendedCard = _draggingCard.AppendedCards[i];
 
-                MoveCommand(appendedCard, _destinationParent, true);
+                MoveCommand(appendedCard, _destinationParent, true, 0);
                 //_draggingCard.ReleaseAppendedCard(appendedCard);
             }
 
@@ -135,7 +146,12 @@ public class MoveSystem
         }
         else
         {
-            MoveCommand(_draggingCard, _destinationParent, false);
+            int moveScore = 0;
+
+            if (_draggingCard.IsLastFrontCardInPile())
+                moveScore = 5;
+
+            MoveCommand(_draggingCard, _destinationParent, false, moveScore);
         }
 
         _draggingCard = null;
@@ -143,10 +159,10 @@ public class MoveSystem
         _pointerEnterPile = null;
     }
 
-    private void MoveCommand(GUICard movedCard, Transform destinationParent, bool isMultipleMove)
+    private void MoveCommand(GUICard movedCard, Transform destinationParent, bool isMultipleMove, int moveScore)
     {
         //Debug.Log("Added MoveCommand");
-        ICommand moveCommand = new MoveCommand(movedCard, destinationParent, isMultipleMove);
+        ICommand moveCommand = new MoveCommand(movedCard, destinationParent, isMultipleMove, moveScore);
         GameManager.Instance.CommandHandler.AddCommand(moveCommand);
         moveCommand.Execute();
     }

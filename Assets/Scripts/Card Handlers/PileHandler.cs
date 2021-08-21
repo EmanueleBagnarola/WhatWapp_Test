@@ -5,6 +5,14 @@ using UnityEngine.EventSystems;
 
 public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+    public List<GUICard> GUICards
+    {
+        get
+        {
+            return _guiCards;
+        }
+    }
+
     public CardArea CardArea
     {
         get
@@ -39,31 +47,6 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         if (_overrideParent == null)
             _overrideParent = transform;
-    }
-
-    public bool CheckAcePile(GUICard cardToMove)
-    {
-        CardData cardDataToMove = cardToMove.CardDataReference;
-
-        if (cardDataToMove.Suit != _cardSuit)
-            return false;
-
-        if (_guiCards.Count <= 0)
-        {
-            if (cardDataToMove.Rank != 1)
-                return false;
-        }
-
-        if(_guiCards.Count > 0)
-        {
-            CardData lastPileCard = _guiCards[_guiCards.Count - 1].CardDataReference;
-
-            if (cardDataToMove.Rank - lastPileCard.Rank != 1)
-                return false;
-        }
-
-        cardToMove.SetCardArea(CardArea.AcesPile);
-        return true;
     }
 
     private IEnumerator FillGUICardsList()

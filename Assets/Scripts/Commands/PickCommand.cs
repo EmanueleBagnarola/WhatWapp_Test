@@ -16,10 +16,12 @@ public class PickCommand : ICommand
     public void Execute()
     {
         EventsManager.Instance.OnPick.Invoke(_guiCardReference);
+        EventsManager.Instance.OnScore.Invoke(5);
     }
 
     public void Undo()
     {
         EventsManager.Instance.OnUndoPick.Invoke(_guiCardReference, _drawnCardsIndex);
+        EventsManager.Instance.OnUndoScore.Invoke(5);
     }
 }

@@ -201,6 +201,27 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _appendedCards.Remove(cardToRelease);
     }
 
+    public bool IsLastFrontCardInPile()
+    {
+        PileHandler pileHandler = GetComponentInParent<PileHandler>();
+
+        if (pileHandler == null || pileHandler.CardArea != CardArea.Table)
+            return false;
+
+        GUICard previousCardInPile = pileHandler.GUICards[pileHandler.GUICards.IndexOf(this) - 1];
+
+        if (previousCardInPile == null)
+            return false;
+
+        if(previousCardInPile != null)
+        {
+            if (previousCardInPile.CurrentSide == CardSide.Back)
+                return true;
+        }
+
+        return false;
+    }
+
     #region Event System Methods
     public void OnDrag(PointerEventData eventData)
     {
