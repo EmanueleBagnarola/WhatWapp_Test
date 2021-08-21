@@ -63,19 +63,19 @@ public class MoveSystem
             }
 
             //Check if cards that user is trying to stack are of the same color
-            if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
-                || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
-            {
-                CallFailMove();
-                return;
-            }
+            //if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
+            //    || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
+            //{
+            //    CallFailMove();
+            //    return;
+            //}
 
-            // Check if rank's cards that user is trying to stack are compatible
-            if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
-            {
-                CallFailMove();
-                return;
-            }
+            //// Check if rank's cards that user is trying to stack are compatible
+            //if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
+            //{
+            //    CallFailMove();
+            //    return;
+            //}
         } 
 
         // Check empty Table Pile Move

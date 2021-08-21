@@ -11,7 +11,7 @@ public class ResetCommand : ICommand
 
     public void Execute()
     {
-        Debug.Log("ResetCommand");
+        //Debug.Log("ResetCommand");
         EventsManager.Instance.OnReset.Invoke();
     }
 

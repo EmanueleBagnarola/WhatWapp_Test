@@ -231,7 +231,7 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
     private void HandleEventReset()
     {
-        Debug.Log("HandleEventReset");
+        //Debug.Log("HandleEventReset");
 
         _deckImage.sprite = Resources.Load<Sprite>("Sprite_Back");
 
@@ -245,7 +245,7 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
     private void HandleEventUndoReset()
     {
-        Debug.Log("HandleEventUndoReset");
+        //Debug.Log("HandleEventUndoReset");
 
         _deckImage.sprite = Resources.Load<Sprite>("Sprite_CardTransparent");
 

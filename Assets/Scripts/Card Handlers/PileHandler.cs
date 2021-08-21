@@ -162,7 +162,7 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             GUICard hangingCard = _guiCards[i];
 
-            if (guiCard == null)
+            if (hangingCard == null)
                 return;
 
             hangingCard.SetSortingOrder(5 + draggingCardIndex+1);

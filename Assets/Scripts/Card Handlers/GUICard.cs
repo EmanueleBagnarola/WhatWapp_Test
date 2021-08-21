@@ -305,7 +305,15 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             {
                 Transform cardTransform = _appendedCards[i].transform;
 
-                cardTransform.position = Vector3.Lerp(cardTransform.position, transform.position + new Vector3(0, -70f, 0), 17 * Time.deltaTime);
+                if(i == 0)
+                {
+                    cardTransform.position = Vector3.Lerp(cardTransform.position, transform.position + new Vector3(0, -70f, 0), 17 * Time.deltaTime);
+                }
+
+                else
+                {
+                    cardTransform.position = Vector3.Lerp(cardTransform.position, _appendedCards[i-1].transform.position + new Vector3(0, -70f * i, 0), 17 * Time.deltaTime);
+                }
             }
         }
     }
