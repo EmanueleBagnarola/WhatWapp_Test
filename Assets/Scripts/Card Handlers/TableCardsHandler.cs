@@ -17,7 +17,12 @@ public class TableCardsHandler : MonoBehaviour
     /// The table transforms that contains the position of each column in landscape mode 
     /// </summary>
     [SerializeField]
-    private Transform[] _landscapeCardsPositions = null;
+    private Transform[] _tablePilesTransform = null;
+
+    [SerializeField]
+    private Transform _landscapeParent = null;
+    [SerializeField]
+    private Transform _portraitParent = null;
 
     private void Start()
     {
@@ -44,7 +49,7 @@ public class TableCardsHandler : MonoBehaviour
                 GUICard guiCard = Instantiate(_guiCardPrefab, _deckTransform);
 
                 // Save the column transform reference inside each GUICard script
-                Transform columnTransform = _landscapeCardsPositions[currentRow];
+                Transform columnTransform = _tablePilesTransform[currentRow];
                 guiCard.UpdateParent(columnTransform);
 
                 // Create a temp object to use as a position reference where to move the card object
@@ -83,11 +88,50 @@ public class TableCardsHandler : MonoBehaviour
     private void InitEvents()
     {
         EventsManager.Instance.OnShuffleEnded.AddListener(HandleEventShuffleEnded);
+        EventsManager.Instance.OnDeviceOrientationUpdate.AddListener(HandleEventDeviceOrientationChange);
     }
 
     private void HandleEventShuffleEnded(List<CardData> cardsData)
     {
         InitGUICards(cardsData);
+    }
+
+    private void HandleEventDeviceOrientationChange(DeviceOrientation deviceOrientation)
+    {
+        switch (deviceOrientation)
+        {
+            case DeviceOrientation.Portrait:
+                for (int i = 0; i < _tablePilesTransform.Length; i++)
+                {
+                    Transform tablePileTransform = _tablePilesTransform[i];
+                    tablePileTransform.SetParent(_portraitParent);
+                }
+                break;
+
+            case DeviceOrientation.PortraitUpsideDown:
+                for (int i = 0; i < _tablePilesTransform.Length; i++)
+                {
+                    Transform tablePileTransform = _tablePilesTransform[i];
+                    tablePileTransform.SetParent(_portraitParent);
+                }
+                break;
+
+            case DeviceOrientation.LandscapeLeft:
+                for (int i = 0; i < _tablePilesTransform.Length; i++)
+                {
+                    Transform tablePileTransform = _tablePilesTransform[i];
+                    tablePileTransform.SetParent(_landscapeParent);
+                }
+                break;
+
+            case DeviceOrientation.LandscapeRight:
+                for (int i = 0; i < _tablePilesTransform.Length; i++)
+                {
+                    Transform tablePileTransform = _tablePilesTransform[i];
+                    tablePileTransform.SetParent(_landscapeParent);
+                }
+                break;
+        }
     }
     #endregion
 }

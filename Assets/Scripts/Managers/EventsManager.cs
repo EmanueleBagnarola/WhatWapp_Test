@@ -31,7 +31,7 @@ public class EventsManager : MonoBehaviour
     public Events.EventScore OnScore = null;
     public Events.EventUndoScore OnUndoScore = null;
     public Events.EventCommand OnCommand = null;
-
+    public Events.EventDeviceOrientationUpdate OnDeviceOrientationUpdate = null;
     private void Awake()
     {
         // Init Singleton ------
@@ -70,5 +70,6 @@ public class Events
     [System.Serializable] public class EventScore : UnityEvent<int> { }
     [System.Serializable] public class EventUndoScore : UnityEvent<int> { }
     [System.Serializable] public class EventCommand : UnityEvent { };
+    [System.Serializable] public class EventDeviceOrientationUpdate : UnityEvent<DeviceOrientation> { };
 }
 

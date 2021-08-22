@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static GameManager Instance = null;
 
+
     /// <summary>
     /// Return the current game type
     /// </summary>
@@ -46,6 +47,21 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private GameState _currentGameState = GameState.Running;
 
+    /// <summary>
+    ///  How long to wait until we check device orientation again.
+    /// </summary>
+    private static float _deviceOrientationCheckDelay = 0.5f;
+
+    /// <summary>
+    /// Current Device Orientation
+    /// </summary>
+    private static DeviceOrientation _currentDeviceOrientation;
+
+    /// <summary>
+    /// Keep the device orientation check running?
+    /// </summary>
+    private static bool _isAlive = true;                    
+
     private MoveSystem _moveSystem;
     private CommandSystem _commandSystem;
 
@@ -72,6 +88,8 @@ public class GameManager : MonoBehaviour
         InitSystems();
 
         StartGame();
+
+        StartCoroutine(CheckForDeviceOrientationChange());
     }
 
     public void UndoCommand()
@@ -104,5 +122,36 @@ public class GameManager : MonoBehaviour
     private void StartGame()
     {
         EventsManager.Instance.OnStartGame.Invoke();
+    }
+
+    IEnumerator CheckForDeviceOrientationChange()
+    {
+        _currentDeviceOrientation = Input.deviceOrientation;
+
+        while (_isAlive)
+        {
+            // Check for an Orientation Change
+            switch (Input.deviceOrientation)
+            {
+                case DeviceOrientation.Unknown:            // Ignore
+                case DeviceOrientation.FaceUp:            // Ignore
+                case DeviceOrientation.FaceDown:        // Ignore
+                    break;
+                default:
+                    if (_currentDeviceOrientation != Input.deviceOrientation)
+                    {
+                        _currentDeviceOrientation = Input.deviceOrientation;
+                        EventsManager.Instance.OnDeviceOrientationUpdate.Invoke(_currentDeviceOrientation);
+                    }
+                    break;
+            }
+
+            yield return new WaitForSeconds(_deviceOrientationCheckDelay);
+        }
+    }
+
+    void OnDestroy()
+    {
+        _isAlive = false;
     }
 }
