@@ -2533,6 +2533,9 @@ MonoBehaviour:
   OnCommand:
     m_PersistentCalls:
       m_Calls: []
+  OnDeviceOrientationUpdate:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!4 &1183998410
 Transform:
   m_ObjectHideFlags: 0
@@ -2823,7 +2826,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1376531733}
   - component: {fileID: 1376531735}
-  - component: {fileID: 1376531734}
   m_Layer: 0
   m_Name: Table Cards Handler Portrait
   m_TagString: Untagged
@@ -2850,28 +2852,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: -330}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0.5, y: 1}
---- !u!114 &1376531734
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1376531732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c64f8f984f8d7644959489b106cf486, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _guiCardPrefab: {fileID: 6778117043231942317, guid: c121f848dfa5558468b739def85861db, type: 3}
-  _deckTransform: {fileID: 1503884518}
-  _landscapeCardsPositions:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
 --- !u!114 &1376531735
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2982,7 +2962,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _guiCardPrefab: {fileID: 6778117043231942317, guid: c121f848dfa5558468b739def85861db, type: 3}
   _deckTransform: {fileID: 1503884518}
-  _landscapeCardsPositions:
+  _tablePilesTransform:
   - {fileID: 409272547}
   - {fileID: 696982653}
   - {fileID: 1266246388}
@@ -2990,6 +2970,8 @@ MonoBehaviour:
   - {fileID: 1261168027}
   - {fileID: 866103430}
   - {fileID: 282414712}
+  _landscapeParent: {fileID: 1383171133}
+  _portraitParent: {fileID: 1376531733}
 --- !u!1 &1503884517
 GameObject:
   m_ObjectHideFlags: 0
