@@ -39,7 +39,7 @@ public enum CardArea
     AcesPile,
 }
 
-public enum MoveUndoType
+public enum OperationType
 {
     Add,
     Remove

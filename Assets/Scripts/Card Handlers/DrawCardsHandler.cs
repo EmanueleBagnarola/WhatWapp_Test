@@ -213,6 +213,7 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         _guiCardsPile.Insert(_pileCounter - 1, guiCard);
         iTween.MoveTo(guiCard.gameObject, _drawPilePositions[_pileCounter-1].position, 0.4f);
         guiCard.transform.SetParent(_drawPileCardsParent);
+        guiCard.SetSortingOrder(_pileCounter);
         guiCard.SetCardArea(CardArea.DrawPile);
     }
 

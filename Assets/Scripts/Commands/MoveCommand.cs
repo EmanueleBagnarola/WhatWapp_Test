@@ -30,12 +30,20 @@ public class MoveCommand : ICommand
 
     public void Execute()
     {
+        Debug.Log("EXECUTE MOVE COMMAND");
         EventsManager.Instance.OnCardMove.Invoke(_guiCard, _destinationParent);
+
+        if(_guiCard.CardArea == CardArea.AcesPile)
+        {
+            _moveScore = -15;
+        }
+
         EventsManager.Instance.OnScore.Invoke(_moveScore);
     }
 
     public void Undo()
     {
+        Debug.Log("UNDO MOVE COMMAND");
         EventsManager.Instance.OnUndoCardMove.Invoke(_guiCard, _sourceParent);
         EventsManager.Instance.OnUndoScore.Invoke(_moveScore);
         _guiCard.SetCardArea(_sourceArea);

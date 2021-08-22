@@ -7,6 +7,14 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance = null;
 
+    public int Score
+    {
+        get
+        {
+            return _currentScoreCount;
+        }
+    }
+
     [SerializeField]
     private TextMeshProUGUI _scoreText = null;
     [SerializeField]
@@ -40,6 +48,10 @@ public class UIManager : MonoBehaviour
         EventsManager.Instance.OnScore.AddListener((score) =>
         {
             _currentScoreCount += score;
+
+            if (_currentScoreCount < 0)
+                _currentScoreCount = 0;
+
             _scoreText.text = "PUNTI\n" + _currentScoreCount.ToString();
         });
 

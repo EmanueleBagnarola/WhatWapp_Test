@@ -11,11 +11,12 @@ public class DrawCommand : ICommand
 
     public void Execute()
     {
-        //Debug.Log("DrawCommand");
+        Debug.Log("EXECUTE DRAW COMMAND");
     }
 
     public void Undo()
     {
+        Debug.Log("UNDO DRAW COMMAND");
         EventsManager.Instance.OnUndoDraw.Invoke();
     }
 }

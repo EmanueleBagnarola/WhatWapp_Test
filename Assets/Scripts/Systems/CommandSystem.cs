@@ -66,9 +66,13 @@ public class CommandSystem
         {
             if (_commandList[_commandList.Count - 2] is MoveCommand)
             {
+                Debug.Log("Previous command was MoveCommand");
                 _commandList[_commandList.Count - 2].Undo();
                 _commandList.Remove(_commandList[_commandList.Count - 2]);
             }
+
+            lastCommand.Undo();
+            _commandList.Remove(lastCommand);
         }
 
         else

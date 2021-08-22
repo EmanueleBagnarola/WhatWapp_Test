@@ -57,25 +57,25 @@ public class MoveSystem
                     return;
                 }
 
-                Debug.Log("CARTA SU PILA ASSI");
+                //Debug.Log("CARTA SU PILA ASSI");
                 MoveCommand(_draggingCard, _destinationParent, false, 10);
                 return;
             }
 
             //Check if cards that user is trying to stack are of the same color
-            if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
-                || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
-            {
-                CallFailMove();
-                return;
-            }
+            //if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
+            //    || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
+            //{
+            //    CallFailMove();
+            //    return;
+            //}
 
-            // Check if rank's cards that user is trying to stack are compatible
-            if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
-            {
-                CallFailMove();
-                return;
-            }
+            //// Check if rank's cards that user is trying to stack are compatible
+            //if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
+            //{
+            //    CallFailMove();
+            //    return;
+            //}
         } 
 
         // Check empty Table Pile Move
@@ -107,7 +107,7 @@ public class MoveSystem
                 }
                 else
                 {
-                    Debug.Log("PRIMO ASSO POSIZIONATO");
+                    //Debug.Log("PRIMO ASSO POSIZIONATO");
                     MoveCommand(_draggingCard, _destinationParent, false, 15);
                     return;
                 }

@@ -62,7 +62,7 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         }
     }
 
-    private void CheckUndoCommand(CardData undoCard, MoveUndoType columnAction)
+    private void CheckUndoCommand(CardData undoCard, OperationType columnAction)
     {
         if (_guiCards.Count <= 0)
             return;
@@ -71,7 +71,7 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
         switch (columnAction)
         {
-            case MoveUndoType.Add:
+            case OperationType.Add:
 
                 if (_guiCards.Count > 1)
                 {
@@ -92,7 +92,7 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
                 }
                 break;
 
-            case MoveUndoType.Remove:
+            case OperationType.Remove:
                 if (firstCard.CurrentSide == CardSide.Back)
                 {
                     firstCard.FlipCard(CardSide.Front);
@@ -189,12 +189,12 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
         {
             _guiCards.Remove(guiCard);
 
-            CheckUndoCommand(guiCard.CardDataReference, MoveUndoType.Remove);
+            CheckUndoCommand(guiCard.CardDataReference, OperationType.Remove);
         }
 
         if(sourceParent.GetComponent<PileHandler>() == this)
         {
-            CheckUndoCommand(guiCard.CardDataReference, MoveUndoType.Add);
+            CheckUndoCommand(guiCard.CardDataReference, OperationType.Add);
 
             _guiCards.Add(guiCard);
             guiCard.transform.SetParent(_overrideParent);

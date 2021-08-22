@@ -208,6 +208,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (pileHandler == null || pileHandler.CardArea != CardArea.Table)
             return false;
 
+        if (pileHandler.GUICards.Count < 2)
+            return false;
+
         GUICard previousCardInPile = pileHandler.GUICards[pileHandler.GUICards.IndexOf(this) - 1];
 
         if (previousCardInPile == null)
