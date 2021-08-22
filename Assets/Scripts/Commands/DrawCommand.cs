@@ -12,11 +12,13 @@ public class DrawCommand : ICommand
     public void Execute()
     {
         Debug.Log("EXECUTE DRAW COMMAND");
+        AudioManager.Instance.Play("MoveCommand");
     }
 
     public void Undo()
     {
         Debug.Log("UNDO DRAW COMMAND");
+
         EventsManager.Instance.OnUndoDraw.Invoke();
     }
 }

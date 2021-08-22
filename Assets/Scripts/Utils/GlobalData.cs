@@ -1,13 +1,8 @@
 public enum GameState
 {
+    Home,
     Running,
     Pause
-}
-
-public enum GameType
-{
-    Classic,
-    Draw3
 }
 
 public enum CardSuit
@@ -43,4 +38,17 @@ public enum OperationType
 {
     Add,
     Remove
+}
+
+public enum UIWindowID
+{
+    Empty,
+    UIWindowPause,
+    UIWindowWin
+}
+
+public enum SceneID
+{
+    Scene_Home,
+    Scene_Game
 }

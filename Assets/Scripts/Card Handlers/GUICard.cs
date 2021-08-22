@@ -96,6 +96,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     {
         InitEvents();
 
+        if (_canvas == null)
+            return;
+
         _beginDragOverrideSorting = _canvas.overrideSorting;
         _beginDragSortingOrder = _canvas.sortingOrder;
     }
@@ -360,7 +363,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
                 else
                 {
-                    cardTransform.position = Vector3.Lerp(cardTransform.position, _appendedCards[i-1].transform.position + new Vector3(0, -70f * i, 0), 17 * Time.deltaTime);
+                    cardTransform.position = Vector3.Lerp(cardTransform.position, _appendedCards[i-1].transform.position + new Vector3(0, -70f, 0), 17 * Time.deltaTime);
                 }
             }
         }

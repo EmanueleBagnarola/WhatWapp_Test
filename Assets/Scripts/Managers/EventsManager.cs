@@ -10,7 +10,8 @@ public class EventsManager : MonoBehaviour
     /// </summary>
     public static EventsManager Instance = null;
 
-    public Events.EventStartGame OnStartGame = null;
+    public Events.EventGameStateChanged OnGameStateChanged = null;
+    public Events.EventDeviceOrientationUpdate OnDeviceOrientationUpdate = null;
     public Events.EventShuffleEnded OnShuffleEnded = null;
     public Events.EventCardsDealed OnCardsDealed = null;
     public Events.EventCardDropped OnCardDropped = null;
@@ -31,7 +32,8 @@ public class EventsManager : MonoBehaviour
     public Events.EventScore OnScore = null;
     public Events.EventUndoScore OnUndoScore = null;
     public Events.EventCommand OnCommand = null;
-    public Events.EventDeviceOrientationUpdate OnDeviceOrientationUpdate = null;
+    public Events.EventGameWon OnGameWon = null;
+
     private void Awake()
     {
         // Init Singleton ------
@@ -45,11 +47,17 @@ public class EventsManager : MonoBehaviour
         }
         //----------------------
     }
+
+    private void Start()
+    {
+        DontDestroyOnLoad(this);
+    }
 }
 
 public class Events
 {
-    [System.Serializable] public class EventStartGame : UnityEvent { };
+    [System.Serializable] public class EventGameStateChanged : UnityEvent<GameState> { };
+    [System.Serializable] public class EventDeviceOrientationUpdate : UnityEvent<DeviceOrientation> { };
     [System.Serializable] public class EventShuffleEnded : UnityEvent<List<CardData>> { };
     [System.Serializable] public class EventCardsDealed : UnityEvent<List<CardData>> { };
     [System.Serializable] public class EventCardDragging : UnityEvent<GUICard> { };
@@ -70,6 +78,6 @@ public class Events
     [System.Serializable] public class EventScore : UnityEvent<int> { }
     [System.Serializable] public class EventUndoScore : UnityEvent<int> { }
     [System.Serializable] public class EventCommand : UnityEvent { };
-    [System.Serializable] public class EventDeviceOrientationUpdate : UnityEvent<DeviceOrientation> { };
+    [System.Serializable] public class EventGameWon : UnityEvent { };
 }
 

@@ -35,9 +35,13 @@ public class DeckManager : MonoBehaviour
         //----------------------
     }
 
-    private void Start()
+    private IEnumerator Start()
     {
         InitEvents();
+
+        yield return new WaitForSeconds(1);
+
+        GenerateCards();
     }
 
     public bool IsDeckEmpty()
@@ -147,7 +151,6 @@ public class DeckManager : MonoBehaviour
     #region Events Handlers
     private void InitEvents()
     {
-        EventsManager.Instance.OnStartGame.AddListener(HandleEventStartGame);
         EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
         EventsManager.Instance.OnCardMove.AddListener(HandleEventCardMove);
         EventsManager.Instance.OnPick.AddListener(HandleEventPick);
@@ -155,11 +158,6 @@ public class DeckManager : MonoBehaviour
         EventsManager.Instance.OnUndoDraw.AddListener(HandleEventUndoDraw);
         EventsManager.Instance.OnReset.AddListener(HandleEventReset);
         EventsManager.Instance.OnUndoReset.AddListener(HandleEventUndoReset);
-    }
-
-    private void HandleEventStartGame()
-    {
-        GenerateCards();
     }
 
     private void HandleEventCardsDealed(List<CardData> cardsData)

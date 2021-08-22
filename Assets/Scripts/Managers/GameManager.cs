@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,12 +10,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static GameManager Instance = null;
 
+    [Header("Set true to enable the ability to move any card on any card")]
+    [Header("To force Device Orientation UI adaptation press L for Landscape or P for portrait")]
     public bool EnableTest = false;
-
-    /// <summary>
-    /// Return the current game type
-    /// </summary>
-    public readonly GameType GameType = GameType.Classic;
     
     /// <summary>
     /// Return the current game state
@@ -24,6 +22,14 @@ public class GameManager : MonoBehaviour
         get
         {
             return _currentGameState;
+        }
+    }
+
+    public DeviceOrientation CurrentDeviceOrientation
+    {
+        get
+        {
+            return _currentDeviceOrientation;
         }
     }
 
@@ -56,12 +62,15 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Current Device Orientation
     /// </summary>
-    private static DeviceOrientation _currentDeviceOrientation;
+    [SerializeField]
+    private DeviceOrientation _currentDeviceOrientation = DeviceOrientation.Portrait;
 
     /// <summary>
     /// Keep the device orientation check running?
     /// </summary>
-    private static bool _isAlive = true;                    
+    private static bool _isAlive = true;
+
+    private int _completedAcePileCount = 0;
 
     private MoveSystem _moveSystem;
     private CommandSystem _commandSystem;
@@ -80,22 +89,55 @@ public class GameManager : MonoBehaviour
         //----------------------
     }
 
-    private IEnumerator Start()
+    private void Start()
     {
+        DontDestroyOnLoad(this);
+
         InitLog();
-
-        StartCoroutine(CheckForDeviceOrientationChange());
-
-        yield return new WaitForSeconds(1);
-
         InitSystems();
 
-        StartGame();
+        StartCoroutine(CheckForDeviceOrientationChange());
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            EventsManager.Instance.OnDeviceOrientationUpdate.Invoke(DeviceOrientation.LandscapeRight);
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            EventsManager.Instance.OnDeviceOrientationUpdate.Invoke(DeviceOrientation.Portrait);
+        }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            UpdateCompletedAcePileCount(OperationType.Add);
+        }
     }
 
     public void UndoCommand()
     {
         _commandSystem.UndoCommand();
+    }
+
+    public void UpdateCompletedAcePileCount(OperationType operationType)
+    {
+        switch (operationType)
+        {
+            case OperationType.Add:
+                _completedAcePileCount++;
+                break;
+
+            case OperationType.Remove:
+                _completedAcePileCount--;
+                break;
+        }
+
+        if(_completedAcePileCount >= 4)
+        {
+            EventsManager.Instance.OnGameWon.Invoke();
+            AudioManager.Instance.Play("Victory");
+        }
     }
 
     private void InitSystems()
@@ -117,12 +159,23 @@ public class GameManager : MonoBehaviour
         #endif
     }
 
-    /// <summary>
-    /// Start the game and call OnStartGame event
-    /// </summary>
-    private void StartGame()
+    public void OnHomeSceneButton()
     {
-        EventsManager.Instance.OnStartGame.Invoke();
+        AudioManager.Instance.Play("Click");
+        SceneManager.LoadScene(SceneID.Scene_Home.ToString());
+    }
+
+    public void OnGameSceneButton()
+    {
+        AudioManager.Instance.Play("Click");
+        SceneManager.LoadScene(SceneID.Scene_Game.ToString());
+    }
+
+    public void UpdateGameState(GameState gameState)
+    {
+        EventsManager.Instance.OnGameStateChanged.Invoke(gameState);
+
+        _currentGameState = gameState;
     }
 
     IEnumerator CheckForDeviceOrientationChange()

@@ -37,6 +37,8 @@ public class MoveCommand : ICommand
         //    _moveScore = -15;
         //}
 
+        AudioManager.Instance.PlayOneShot("MoveCommand");
+
         EventsManager.Instance.OnCardMove.Invoke(_guiCard, _destinationParent);
 
         EventsManager.Instance.OnScore.Invoke(_moveScore);

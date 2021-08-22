@@ -58,6 +58,10 @@ public class MoveSystem
 
                 //Debug.Log("CARTA SU PILA ASSI");
                 MoveCommand(_draggingCard, _destinationParent, false, 10);
+
+                _draggingCard = null;
+                _pointerEnterCard = null;
+                _pointerEnterPile = null;
                 return;
             }
 
@@ -124,6 +128,10 @@ public class MoveSystem
 
                     //Debug.Log("PRIMO ASSO POSIZIONATO");
                     MoveCommand(_draggingCard, _destinationParent, false, 10);
+
+                    _draggingCard = null;
+                    _pointerEnterCard = null;
+                    _pointerEnterPile = null;
                     return;
                 }
             }

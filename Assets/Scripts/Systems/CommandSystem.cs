@@ -18,6 +18,8 @@ public class CommandSystem
         if (_commandList.Count == 0)
             return;
 
+        AudioManager.Instance.PlayOneShot("UndoCommand");
+
         EventsManager.Instance.OnCommand.Invoke();
 
         ICommand lastCommand = _commandList[_commandList.Count - 1];

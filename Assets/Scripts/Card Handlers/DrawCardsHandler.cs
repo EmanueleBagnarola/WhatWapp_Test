@@ -33,25 +33,23 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         if (!_canDraw)
             return;
 
-        CardData drawCardData = DeckManager.Instance.DrawCard();
-
-        if(drawCardData == null)
-        {
-            return;
-        }
-
-        DrawCard(drawCardData);
+        DrawCard();
     }
 
-    private void DrawCard(CardData cardToInsert)
+    private void DrawCard()
     {
+        CardData drawCardData = DeckManager.Instance.DrawCard();
+
+        if (drawCardData == null)
+            return;
+
         RefillDrawPile();
 
         GUICard guiCardToInsert = null;
         if (_pileCounter >= 3)
         {
             guiCardToInsert = _guiCardsPile[_pileCounter];
-            guiCardToInsert.SetCardData(cardToInsert, CardArea.DrawPile);
+            guiCardToInsert.SetCardData(drawCardData, CardArea.DrawPile);
             guiCardToInsert.gameObject.SetActive(true);
             guiCardToInsert.FlipCard(CardSide.Front);
             guiCardToInsert.SetSortingOrder(4);
@@ -62,7 +60,7 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         {
             guiCardToInsert = _guiCardsPile[_pileCounter];
             guiCardToInsert.gameObject.SetActive(true);
-            guiCardToInsert.SetCardData(cardToInsert, CardArea.DrawPile);
+            guiCardToInsert.SetCardData(drawCardData, CardArea.DrawPile);
             guiCardToInsert.FlipCard(CardSide.Front);
             guiCardToInsert.SetSortingOrder(_pileCounter + 1);
             guiCardToInsert.EnableRaycast(true);

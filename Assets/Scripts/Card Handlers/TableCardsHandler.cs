@@ -74,6 +74,8 @@ public class TableCardsHandler : MonoBehaviour
                 yield return new WaitForSeconds(0.01f);
                 guiCard.transform.SetParent(spawnPosition.transform);
 
+                AudioManager.Instance.PlayOneShot("SpawnCard");
+
                 // Time to wait to next card to spawn
                 yield return new WaitForSeconds(0.1f);
             }

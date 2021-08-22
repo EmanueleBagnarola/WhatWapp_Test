@@ -179,6 +179,14 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
 
                 // Set the guiCard CardArea as this Pile Card Area
                 guiCard.SetCardArea(_cardArea);
+
+                if(CardArea == CardArea.AcesPile)
+                {
+                    if(_guiCards.Count >= 13)
+                    {
+                        GameManager.Instance.UpdateCompletedAcePileCount(OperationType.Add);
+                    }
+                }
             }
         }
     }
@@ -187,6 +195,14 @@ public class PileHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHand
     {
         if (_guiCards.Contains(guiCard))
         {
+            if (CardArea == CardArea.AcesPile)
+            {
+                if (_guiCards.Count >= 13)
+                {
+                    GameManager.Instance.UpdateCompletedAcePileCount(OperationType.Remove);
+                }
+            }
+
             _guiCards.Remove(guiCard);
 
             CheckUndoCommand(guiCard.CardDataReference, OperationType.Remove);
