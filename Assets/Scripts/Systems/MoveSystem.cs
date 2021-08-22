@@ -20,7 +20,6 @@ public class MoveSystem
 
     public void CheckMove()
     {
-
         if (_draggingCard == null || _pointerEnterCard == null && _pointerEnterPile == null)
         {
             CallFailMove();
@@ -62,19 +61,28 @@ public class MoveSystem
                 return;
             }
 
-            //Check if cards that user is trying to stack are of the same color
-            if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
-                || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
+            if (_draggingCard.transform.parent == _pointerEnterCard.transform.parent)
             {
                 CallFailMove();
                 return;
             }
 
-            // Check if rank's cards that user is trying to stack are compatible
-            if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
+            //Check if cards that user is trying to stack are of the same color
+            if(GameManager.Instance.EnableTest == false)
             {
-                CallFailMove();
-                return;
+                if (draggingCardData.GetCardColor() == CardColor.Black && pointerEnterCardData.GetCardColor() == CardColor.Black
+                    || draggingCardData.GetCardColor() == CardColor.Red && pointerEnterCardData.GetCardColor() == CardColor.Red)
+                {
+                    CallFailMove();
+                    return;
+                }
+
+                // Check if rank's cards that user is trying to stack are compatible
+                if (draggingCardData.Rank > pointerEnterCardData.Rank || pointerEnterCardData.Rank - draggingCardData.Rank != 1)
+                {
+                    CallFailMove();
+                    return;
+                }
             }
         } 
 
@@ -107,8 +115,15 @@ public class MoveSystem
                 }
                 else
                 {
+                    // Check if I am trying to position again a 1 of Ace
+                    if (_pointerEnterPile.GUICards.Contains(_draggingCard))
+                    {
+                        CallFailMove();
+                        return;
+                    }
+
                     //Debug.Log("PRIMO ASSO POSIZIONATO");
-                    MoveCommand(_draggingCard, _destinationParent, false, 15);
+                    MoveCommand(_draggingCard, _destinationParent, false, 10);
                     return;
                 }
             }
@@ -116,13 +131,6 @@ public class MoveSystem
 
         //Debug.Log("Trying to drop [" + draggingCardData.Rank + " of " + draggingCardData.Suit + "] on " +
         //"" + "[" + pointerEnterCardData.Rank + " of " + pointerEnterCardData.Suit + "]");
-
-        // Check if the player is trying to stack a card on top of the card it's already stacked on
-        if (_draggingCard.transform.parent == _destinationParent.transform.parent)
-        {
-            CallFailMove();
-            return;
-        }
 
         // Check for multiple cards dragging
         if (_draggingCard.AppendedCards.Count > 0)
@@ -142,7 +150,8 @@ public class MoveSystem
                 //_draggingCard.ReleaseAppendedCard(appendedCard);
             }
 
-            _draggingCard.AppendedCards.Clear();
+            //_draggingCard.AppendedCards.Clear();
+            _draggingCard.ReleaseAppendedCards();
         }
         else
         {

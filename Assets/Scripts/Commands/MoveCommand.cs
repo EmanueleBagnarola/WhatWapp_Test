@@ -30,13 +30,14 @@ public class MoveCommand : ICommand
 
     public void Execute()
     {
-        Debug.Log("EXECUTE MOVE COMMAND");
-        EventsManager.Instance.OnCardMove.Invoke(_guiCard, _destinationParent);
+        Debug.Log("EXECUTE MOVE COMMAND FROM: " + _sourceArea);
 
-        if(_guiCard.CardArea == CardArea.AcesPile)
-        {
-            _moveScore = -15;
-        }
+        //if (_sourceArea == CardArea.AcesPile)
+        //{
+        //    _moveScore = -15;
+        //}
+
+        EventsManager.Instance.OnCardMove.Invoke(_guiCard, _destinationParent);
 
         EventsManager.Instance.OnScore.Invoke(_moveScore);
     }

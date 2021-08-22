@@ -33,7 +33,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.00015258789, y: 0}
+  m_AnchoredPosition: {x: -0.00016784668, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1899567017
@@ -54,7 +54,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: -243.5648
+  m_Spacing: -224.1995
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _guiCards: []
   _cardArea: 2
-  _cardSuit: 3
+  _cardSuit: 1
   _overrideParent: {fileID: 1899567016}
 --- !u!1 &7806201536289038539
 GameObject:
@@ -221,7 +221,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a851d326510d513469e06a43f46c5485, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 21ffbe84418765b449b1d26dcc46511f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

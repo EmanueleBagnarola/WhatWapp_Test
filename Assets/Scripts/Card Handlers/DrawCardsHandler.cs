@@ -21,6 +21,8 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
     private int _pileCounter = 0;
 
+    private bool _canDraw = false;
+
     private void Start()
     {
         InitEvents();
@@ -28,6 +30,9 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (!_canDraw)
+            return;
+
         CardData drawCardData = DeckManager.Instance.DrawCard();
 
         if(drawCardData == null)
@@ -40,13 +45,7 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
     private void DrawCard(CardData cardToInsert)
     {
-        // Check if the current pile cards in one less, due to a previous pick command
-        if(_guiCardsPile.Count <= 3)
-        {
-            GUICard newGuiCard = Instantiate(Resources.Load<GUICard>("GUICard"), _drawPileCardsParent);
-            _guiCardsPile.Add(newGuiCard);
-            newGuiCard.gameObject.SetActive(false);
-        }
+        RefillDrawPile();
 
         GUICard guiCardToInsert = null;
         if (_pileCounter >= 3)
@@ -75,6 +74,8 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
     private void ShiftToRight() 
     {
+        RefillDrawPile();
+
         if (_hiddenCards.Count > 0)
         {
             GUICard hiddenCard = null;
@@ -121,6 +122,8 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
 
     private void ShiftToLeft()
     {
+        RefillDrawPile();
+
         if (_pileCounter >= 3)
         {
             _guiCardsPile[1].SetSortingOrder(1);
@@ -184,15 +187,36 @@ public class DrawCardsHandler : MonoBehaviour, IPointerDownHandler
         yield return null;
     }
 
+    private void RefillDrawPile()
+    {
+        // Check if the current pile cards in one less, due to a previous pick command
+        if (_guiCardsPile.Count <= 3)
+        {
+            // Check if there is the minumum amount of card reference in gui cards list to prevent null references
+            while (_guiCardsPile.Count < 4)
+            {
+                GUICard newGuiCard = Instantiate(Resources.Load<GUICard>("GUICard"), _drawPileCardsParent);
+                _guiCardsPile.Add(newGuiCard);
+                newGuiCard.gameObject.SetActive(false);
+            }
+        }
+    }
+
     #region Events Handlers
     private void InitEvents()
     {
+        EventsManager.Instance.OnCardsDealed.AddListener(HandleEventCardsDealed);
         EventsManager.Instance.OnCardMove.AddListener(HandleEventCardMove);
         EventsManager.Instance.OnUndoCardMove.AddListener(HandleEventUndoCardMove);
         EventsManager.Instance.OnUndoDraw.AddListener(HandleEventUndoDraw);
         EventsManager.Instance.OnDeckEmpty.AddListener(HandleEventDeckEmpty);
         EventsManager.Instance.OnReset.AddListener(HandleEventReset);
         EventsManager.Instance.OnUndoReset.AddListener(HandleEventUndoReset);
+    }
+
+    private void HandleEventCardsDealed(List<CardData> cardsData)
+    {
+        _canDraw = true;
     }
 
     private void HandleEventCardMove(GUICard guiCard, Transform destinationParent)

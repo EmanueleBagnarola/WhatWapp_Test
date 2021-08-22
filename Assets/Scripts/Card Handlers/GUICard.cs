@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler, IPointerEnterHandler, IPointerExitHandler
+public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     #region Public reference variables
     public CardData CardDataReference
@@ -37,6 +37,14 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return _appendedCards;
         }
     }
+
+    public PileHandler PileHandlerParent
+    {
+        get
+        {
+            return _pileHandlerParent;
+        }
+    }
     #endregion
 
     #region Private reference variables
@@ -47,6 +55,7 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     [SerializeField]
     private List<GUICard> _appendedCards = new List<GUICard>();
     private bool _isAppended = false;
+    private PileHandler _pileHandlerParent = null;
     #endregion
 
     #region GUI Editor variables
@@ -195,10 +204,16 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _appendedCards.Add(cardToAppend);   
     }
 
-    public void ReleaseAppendedCard(GUICard cardToRelease)
+    public void ReleaseAppendedCards()
     {
-        cardToRelease.SetSortingOrder(-1);
-        _appendedCards.Remove(cardToRelease);
+        for (int i = 0; i < _appendedCards.Count; i++)
+        {
+            GUICard appendedCard = _appendedCards[i];
+            appendedCard.SetSortingOrder(-1);
+            appendedCard.EnableRaycast(true);
+        }
+
+        _appendedCards.Clear();
     }
 
     public bool IsLastFrontCardInPile()
@@ -221,6 +236,19 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             if (previousCardInPile.CurrentSide == CardSide.Back)
                 return true;
         }
+
+        return false;
+    }
+
+    public bool PileHandlerContainsCard(GUICard guiCard)
+    {
+        PileHandler pileHandler = GetComponentInParent<PileHandler>();
+
+        if (pileHandler == null)
+            return false;
+
+        if (pileHandler.GUICards.Contains(guiCard))
+            return true;
 
         return false;
     }
@@ -262,14 +290,8 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (_currentSide == CardSide.Back)
             return;
 
-        GameManager.Instance.MoveSystem.CheckMove();
-    }
-
-    public void OnDrop(PointerEventData eventData)
-    {
-        if (_currentSide == CardSide.Back)
-            return;
-
+        //GameManager.Instance.MoveSystem.CheckMove();
+        Debug.Log("OnEndDrag: " + CardDataReference.Rank + " of " + CardDataReference.Suit);
         EventsManager.Instance.OnCardDropped.Invoke();
     }
 
@@ -373,6 +395,8 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     private void HandleEventCardsDealed(List<CardData> cardsData)
     {
+        EnableRaycast(true);
+
         if (!transform.parent.name.Contains("temp"))
             return;
 
@@ -418,9 +442,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
                 appendedCard.MoveToEndDragPosition();
             }
 
-            _appendedCards.Clear();
+            ReleaseAppendedCards();
+            //_appendedCards.Clear();
         }
-
 
         _canvas.overrideSorting = _beginDragOverrideSorting;
         _canvas.sortingOrder = _beginDragSortingOrder;

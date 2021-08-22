@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public static GameManager Instance = null;
 
+    public bool EnableTest = false;
 
     /// <summary>
     /// Return the current game type
@@ -83,13 +84,13 @@ public class GameManager : MonoBehaviour
     {
         InitLog();
 
+        StartCoroutine(CheckForDeviceOrientationChange());
+
         yield return new WaitForSeconds(1);
 
         InitSystems();
 
         StartGame();
-
-        StartCoroutine(CheckForDeviceOrientationChange());
     }
 
     public void UndoCommand()
