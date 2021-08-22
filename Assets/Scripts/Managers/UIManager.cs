@@ -16,9 +16,24 @@ public class UIManager : MonoBehaviour
     }
 
     [SerializeField]
+    private Transform[] _UIButtons = null;
+    [SerializeField]
+    private Transform[] _InfoTextLabels = null;
+
+    [SerializeField]
     private TextMeshProUGUI _scoreText = null;
     [SerializeField]
     private TextMeshProUGUI _movesText = null;
+
+    [SerializeField]
+    private Transform _textInfoLandscapeParent = null;
+    [SerializeField]
+    private Transform _textInfoPortraitParent = null;
+
+    [SerializeField]
+    private Transform _uiButtonsLandscapeParent = null;
+    [SerializeField]
+    private Transform _uiButtonsPortraitParent = null;
 
     private int _currentScoreCount = 0;
     private int _currentMovesCount = 0;
@@ -63,6 +78,64 @@ public class UIManager : MonoBehaviour
                 _currentScoreCount = 0;
 
             _scoreText.text = "PUNTI\n" + _currentScoreCount.ToString();
+        });
+
+        EventsManager.Instance.OnDeviceOrientationUpdate.AddListener((deviceOrientation) =>
+        {
+            switch (deviceOrientation)
+            {
+                case DeviceOrientation.Portrait:
+                    for (int i = 0; i < _InfoTextLabels.Length; i++)
+                    {
+                        Transform infoTextLabel = _InfoTextLabels[i];
+                        infoTextLabel.SetParent(_textInfoPortraitParent);
+                    }
+                    for (int i = 0; i < _UIButtons.Length; i++)
+                    {
+                        Transform uiButton = _UIButtons[i];
+                        uiButton.SetParent(_uiButtonsPortraitParent);
+                    }
+                    break;
+
+                case DeviceOrientation.PortraitUpsideDown:
+                    for (int i = 0; i < _InfoTextLabels.Length; i++)
+                    {
+                        Transform infoTextLabel = _InfoTextLabels[i];
+                        infoTextLabel.SetParent(_textInfoPortraitParent);
+                    }
+                    for (int i = 0; i < _UIButtons.Length; i++)
+                    {
+                        Transform uiButton = _UIButtons[i];
+                        uiButton.SetParent(_uiButtonsPortraitParent);
+                    }
+                    break;
+
+                case DeviceOrientation.LandscapeLeft:
+                    for (int i = 0; i < _InfoTextLabels.Length; i++)
+                    {
+                        Transform infoTextLabel = _InfoTextLabels[i];
+                        infoTextLabel.SetParent(_textInfoLandscapeParent);
+                    }
+                    for (int i = 0; i < _UIButtons.Length; i++)
+                    {
+                        Transform uiButton = _UIButtons[i];
+                        uiButton.SetParent(_uiButtonsLandscapeParent);
+                    }
+                    break;
+
+                case DeviceOrientation.LandscapeRight:
+                    for (int i = 0; i < _InfoTextLabels.Length; i++)
+                    {
+                        Transform infoTextLabel = _InfoTextLabels[i];
+                        infoTextLabel.SetParent(_textInfoLandscapeParent);
+                    }
+                    for (int i = 0; i < _UIButtons.Length; i++)
+                    {
+                        Transform uiButton = _UIButtons[i];
+                        uiButton.SetParent(_uiButtonsLandscapeParent);
+                    }
+                    break;
+            }
         });
     }
 
