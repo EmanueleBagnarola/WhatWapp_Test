@@ -13,35 +13,35 @@ public class UIWindow : MonoBehaviour
     {
         EventsManager.Instance.OnDeviceOrientationUpdate.AddListener((DeviceOrientation) =>
         {
-            if (!LandscapeMainPanel.activeSelf && !PortraitMainPanel.activeSelf)
-                return;
-
-            switch (GameManager.Instance.CurrentDeviceOrientation)
+            if (LandscapeMainPanel.activeSelf || PortraitMainPanel.activeSelf)
             {
-                case DeviceOrientation.Portrait:
+                switch (GameManager.Instance.CurrentDeviceOrientation)
+                {
+                    case DeviceOrientation.Portrait:
 
-                    LandscapeMainPanel.SetActive(false);
-                    PortraitMainPanel.SetActive(true);
-                    break;
+                        LandscapeMainPanel.SetActive(false);
+                        PortraitMainPanel.SetActive(true);
+                        break;
 
-                case DeviceOrientation.PortraitUpsideDown:
+                    case DeviceOrientation.PortraitUpsideDown:
 
-                    LandscapeMainPanel.SetActive(false);
-                    PortraitMainPanel.SetActive(true);
-                    break;
+                        LandscapeMainPanel.SetActive(false);
+                        PortraitMainPanel.SetActive(true);
+                        break;
 
-                case DeviceOrientation.LandscapeLeft:
+                    case DeviceOrientation.LandscapeLeft:
 
-                    PortraitMainPanel.SetActive(false);
-                    LandscapeMainPanel.SetActive(true);
-                    break;
+                        PortraitMainPanel.SetActive(false);
+                        LandscapeMainPanel.SetActive(true);
+                        break;
 
-                case DeviceOrientation.LandscapeRight:
+                    case DeviceOrientation.LandscapeRight:
 
-                    PortraitMainPanel.SetActive(false);
-                    LandscapeMainPanel.SetActive(true);
-                    break;
-            }
+                        PortraitMainPanel.SetActive(false);
+                        LandscapeMainPanel.SetActive(true);
+                        break;
+                }
+            }         
         });
     }
 
@@ -67,6 +67,11 @@ public class UIWindow : MonoBehaviour
             case DeviceOrientation.LandscapeRight:
 
                 LandscapeMainPanel.SetActive(true);
+                break;
+
+            default:
+
+                PortraitMainPanel.SetActive(true);
                 break;
         }
     }

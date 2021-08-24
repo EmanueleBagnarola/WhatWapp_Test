@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// The Command called when the player moves a card from the drawn pile to the aces pile or the table pile
+/// </summary>
 public class PickCommand : ICommand
 {
     private GUICard _guiCardReference = null;

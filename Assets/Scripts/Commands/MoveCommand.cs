@@ -2,17 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
+/// <summary>
+/// The Command called when the player moved one card 
+/// </summary>
 public class MoveCommand : ICommand
 {
+    /// <summary>
+    /// Check if the MoveCommand was called after the player moved a stacked pile of cards
+    /// </summary>
     public bool IsMultipleMove = false;
 
     private GUICard _guiCard = null;
+
+    /// <summary>
+    /// The parent transform where the card will be set in
+    /// </summary>
     private Transform _destinationParent = null;
 
+    /// <summary>
+    /// The parent transform where the card was set before the MoveCommand
+    /// </summary>
     private Transform _sourceParent = null;
+
+    /// <summary>
+    /// The table area where the card was before the MoveCommand
+    /// </summary>
     private CardArea _sourceArea;
 
+    /// <summary>
+    /// The score to add (or undo) after the MoveCommand
+    /// </summary>
     private int _moveScore = 0;
 
     public MoveCommand(GUICard guiCard, Transform destinationParent, bool _isMultipleMove, int moveScore)
@@ -31,11 +50,6 @@ public class MoveCommand : ICommand
     public void Execute()
     {
         Debug.Log("EXECUTE MOVE COMMAND FROM: " + _sourceArea);
-
-        //if (_sourceArea == CardArea.AcesPile)
-        //{
-        //    _moveScore = -15;
-        //}
 
         AudioManager.Instance.PlayOneShot("MoveCommand");
 

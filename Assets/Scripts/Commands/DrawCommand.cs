@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Command called when the player drew a card from the deck
+/// </summary>
 public class DrawCommand : ICommand
 {
     public DrawCommand()

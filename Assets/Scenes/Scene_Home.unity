@@ -359,7 +359,7 @@ RectTransform:
   m_GameObject: {fileID: 72679338}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1626985382}
   m_RootOrder: 5
@@ -437,7 +437,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   EnableTest: 0
-  _currentDeviceOrientation: 0
 --- !u!4 &112011310
 Transform:
   m_ObjectHideFlags: 0
@@ -539,7 +538,7 @@ GameObject:
   - component: {fileID: 284449094}
   - component: {fileID: 284449093}
   m_Layer: 0
-  m_Name: Golden Suit (3)
+  m_Name: Golden Suit (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -554,14 +553,14 @@ RectTransform:
   m_GameObject: {fileID: 284449091}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1626985382}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 150, y: -210.79}
+  m_AnchoredPosition: {x: 50, y: -210.79}
   m_SizeDelta: {x: 53, y: 62}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &284449093
@@ -1283,7 +1282,7 @@ RectTransform:
   m_GameObject: {fileID: 860680949}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1626985382}
   m_RootOrder: 4
@@ -1709,8 +1708,8 @@ MonoBehaviour:
   _goldenSuits:
   - {fileID: 860680949}
   - {fileID: 72679338}
-  - {fileID: 1619456949}
   - {fileID: 284449091}
+  - {fileID: 1619456949}
   _startGameButton: {fileID: 848413458}
 --- !u!4 &1282125585
 Transform:
@@ -2123,7 +2122,7 @@ GameObject:
   - component: {fileID: 1619456952}
   - component: {fileID: 1619456951}
   m_Layer: 0
-  m_Name: Golden Suit (2)
+  m_Name: Golden Suit (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2138,14 +2137,14 @@ RectTransform:
   m_GameObject: {fileID: 1619456949}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1626985382}
-  m_RootOrder: 6
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: -210.79}
+  m_AnchoredPosition: {x: 150, y: -210.79}
   m_SizeDelta: {x: 57, y: 56}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1619456951
@@ -2219,8 +2218,8 @@ RectTransform:
   - {fileID: 4042766395884646433}
   - {fileID: 860680950}
   - {fileID: 72679339}
-  - {fileID: 1619456950}
   - {fileID: 284449092}
+  - {fileID: 1619456950}
   m_Father: {fileID: 2121135605}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

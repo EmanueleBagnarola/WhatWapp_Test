@@ -4,13 +4,34 @@ using UnityEngine;
 
 public class MoveSystem 
 {
+    /// <summary>
+    /// The current dragging card reference
+    /// </summary>
     private GUICard _draggingCard = null;
+
+    /// <summary>
+    /// The card the player is trying to move the dragging card onto
+    /// </summary>
     private GUICard _pointerEnterCard = null;
+
+    /// <summary>
+    /// The pile the player is trying to move the dragging card onto
+    /// </summary>
     private PileHandler _pointerEnterPile = null;
 
+    /// <summary>
+    /// The drop destination parent that the dragging card has to be set into
+    /// </summary>
     private Transform _destinationParent = null;
 
+    /// <summary>
+    /// The card data the player is trying to move the dragging card onto
+    /// </summary>
     private CardData draggingCardData = null;
+
+    /// <summary>
+    /// The card data the player is trying to move the dragging card onto
+    /// </summary>
     private CardData pointerEnterCardData = null;
 
     public MoveSystem()
@@ -18,6 +39,9 @@ public class MoveSystem
         InitEvents();
     }
 
+    /// <summary>
+    /// Handles what happens after the player dropped a card anywhere on the table. Manages the moves rules.
+    /// </summary>
     public void CheckMove()
     {
         if (_draggingCard == null || _pointerEnterCard == null && _pointerEnterPile == null)
@@ -143,11 +167,14 @@ public class MoveSystem
         // Check for multiple cards dragging
         if (_draggingCard.AppendedCards.Count > 0)
         {
+            // Set the score of the next move
             int moveScore = 0;
 
-            if (_draggingCard.IsLastFrontCardInPile())
+            // Check if the last moved top card had a hidden card previous in his list. If so, add 5 points
+            if (_draggingCard.IsLastFrontCardInPile(_draggingCard.AppendedCards.Count + 1))
                 moveScore = 5;
 
+            // Move the first card of the dragging cards list
             MoveCommand(_draggingCard, _destinationParent, true, moveScore);
 
             for (int i = 0; i < _draggingCard.AppendedCards.Count; i++)
@@ -155,17 +182,16 @@ public class MoveSystem
                 GUICard appendedCard = _draggingCard.AppendedCards[i];
 
                 MoveCommand(appendedCard, _destinationParent, true, 0);
-                //_draggingCard.ReleaseAppendedCard(appendedCard);
             }
 
-            //_draggingCard.AppendedCards.Clear();
+            // Clear the appended card list
             _draggingCard.ReleaseAppendedCards();
         }
         else
         {
             int moveScore = 0;
 
-            if (_draggingCard.IsLastFrontCardInPile())
+            if (_draggingCard.IsLastFrontCardInPile(1))
                 moveScore = 5;
 
             MoveCommand(_draggingCard, _destinationParent, false, moveScore);
@@ -176,6 +202,13 @@ public class MoveSystem
         _pointerEnterPile = null;
     }
 
+    /// <summary>
+    /// Calls the MoveCommand for the current dragging card
+    /// </summary>
+    /// <param name="movedCard"></param>
+    /// <param name="destinationParent"></param>
+    /// <param name="isMultipleMove"></param>
+    /// <param name="moveScore"></param>
     private void MoveCommand(GUICard movedCard, Transform destinationParent, bool isMultipleMove, int moveScore)
     {
         //Debug.Log("Added MoveCommand");
@@ -184,6 +217,9 @@ public class MoveSystem
         moveCommand.Execute();
     }
 
+    /// <summary>
+    /// Handles what happens if the player dropped a card and any rule was applied
+    /// </summary>
     private void CallFailMove()
     {
         EventsManager.Instance.OnCardFailMove.Invoke(_draggingCard);

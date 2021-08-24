@@ -10,6 +10,9 @@ public class TableCardsHandler : MonoBehaviour
     [SerializeField]
     private GUICard _guiCardPrefab = null;
 
+    /// <summary>
+    /// The deck image transform used as starting position and undo position for draw animation
+    /// </summary>
     [SerializeField]
     private Transform _deckTransform = null;
 
@@ -19,8 +22,13 @@ public class TableCardsHandler : MonoBehaviour
     [SerializeField]
     private Transform[] _tablePilesTransform = null;
 
+    /// <summary>
+    /// The parent where to move any card object when the device is in landscape orientation
+    /// </summary>
     [SerializeField]
     private Transform _landscapeParent = null;
+
+    /// The parent where to move any card object when the device is in portrait orientation
     [SerializeField]
     private Transform _portraitParent = null;
 

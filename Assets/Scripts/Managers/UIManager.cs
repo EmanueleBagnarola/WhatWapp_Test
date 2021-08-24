@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
     private float _currentTimerCount = 0;
     private int _currentMovesCount = 0;
 
-    private bool _pauseTimer = false;
+    private bool _pauseTimer = true;
     private bool _canUndo = true;
 
     private void Awake()
@@ -101,9 +101,9 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void OnHomeButton()
+    public void OnRestartButton()
     {
-        GameManager.Instance.OnHomeSceneButton();
+        GameManager.Instance.OnGameSceneButton();
     }
 
     public void OpenUIWindow(UIWindowID windowID)
@@ -121,6 +121,11 @@ public class UIManager : MonoBehaviour
 
     private void InitEvents()
     {
+        EventsManager.Instance.OnCardsDealed.AddListener((List<CardData> cardDataList) =>
+        {
+            _pauseTimer = false;
+        });
+
         EventsManager.Instance.OnCommand.AddListener(() =>
         {
             _currentMovesCount++;

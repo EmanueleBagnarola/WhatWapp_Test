@@ -24,7 +24,10 @@ public class GameManager : MonoBehaviour
             return _currentGameState;
         }
     }
-
+    
+    /// <summary>
+    /// Return the current device orientation (Landscape variants and Portrait variants)
+    /// </summary>
     public DeviceOrientation CurrentDeviceOrientation
     {
         get
@@ -33,6 +36,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The system that handles the gameplay rules
+    /// </summary>
     public MoveSystem MoveSystem
     {
         get
@@ -41,6 +47,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// The system that handles the Command pattern
+    /// </summary>
     public CommandSystem CommandHandler
     {
         get
@@ -62,14 +71,17 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Current Device Orientation
     /// </summary>
-    [SerializeField]
-    private DeviceOrientation _currentDeviceOrientation = DeviceOrientation.Portrait;
+    //[SerializeField]
+    private DeviceOrientation _currentDeviceOrientation;
 
     /// <summary>
     /// Keep the device orientation check running?
     /// </summary>
     private static bool _isAlive = true;
 
+    /// <summary>
+    /// Stores the count of the current completed aces count. If 4, then the game is won
+    /// </summary>
     private int _completedAcePileCount = 0;
 
     private MoveSystem _moveSystem;
@@ -96,11 +108,24 @@ public class GameManager : MonoBehaviour
         InitLog();
         InitSystems();
 
-        StartCoroutine(CheckForDeviceOrientationChange());
+        StartCoroutine(StartingCheckForDeviceOrientationChange());
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    /// <summary>
+    /// Event called when a scene is loaded
+    /// </summary>
+    /// <param name="scene"></param>
+    /// <param name="loadSceneMode"></param>
+    private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
+    {
+        StartCoroutine(CheckForDeviceOrientationChange(0.1f));
     }
 
     private void Update()
     {
+        // Editor debug inputs
         if (Input.GetKeyDown(KeyCode.L))
         {
             EventsManager.Instance.OnDeviceOrientationUpdate.Invoke(DeviceOrientation.LandscapeRight);
@@ -115,11 +140,18 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Undo the last command
+    /// </summary>
     public void UndoCommand()
     {
         _commandSystem.UndoCommand();
     }
 
+    /// <summary>
+    /// Update the completed aces pile count
+    /// </summary>
+    /// <param name="operationType"></param>
     public void UpdateCompletedAcePileCount(OperationType operationType)
     {
         switch (operationType)
@@ -178,30 +210,31 @@ public class GameManager : MonoBehaviour
         _currentGameState = gameState;
     }
 
-    IEnumerator CheckForDeviceOrientationChange()
+    private IEnumerator CheckForDeviceOrientationChange(float delay)
     {
+        yield return new WaitForSeconds(delay);
+
         _currentDeviceOrientation = Input.deviceOrientation;
 
         while (_isAlive)
         {
             // Check for an Orientation Change
-            switch (Input.deviceOrientation)
+            if (_currentDeviceOrientation != Input.deviceOrientation)
             {
-                case DeviceOrientation.Unknown:            // Ignore
-                case DeviceOrientation.FaceUp:            // Ignore
-                case DeviceOrientation.FaceDown:        // Ignore
-                    break;
-                default:
-                    if (_currentDeviceOrientation != Input.deviceOrientation)
-                    {
-                        _currentDeviceOrientation = Input.deviceOrientation;
-                        EventsManager.Instance.OnDeviceOrientationUpdate.Invoke(_currentDeviceOrientation);
-                    }
-                    break;
+                _currentDeviceOrientation = Input.deviceOrientation;
+                EventsManager.Instance.OnDeviceOrientationUpdate.Invoke(_currentDeviceOrientation);
             }
 
             yield return new WaitForSeconds(_deviceOrientationCheckDelay);
         }
+    }
+
+    private IEnumerator StartingCheckForDeviceOrientationChange()
+    {
+        yield return new WaitForSeconds(0.1f);
+
+        _currentDeviceOrientation = Input.deviceOrientation;
+        EventsManager.Instance.OnDeviceOrientationUpdate.Invoke(_currentDeviceOrientation);
     }
 
     void OnDestroy()

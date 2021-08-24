@@ -24,14 +24,11 @@ public class CommandSystem
 
         ICommand lastCommand = _commandList[_commandList.Count - 1];
 
-        //lastCommand.Undo();
-        ////_commandList.RemoveAt(_index - 1);
-        //_commandList.Remove(lastCommand);
-
         if (lastCommand is MoveCommand)
         {
             MoveCommand moveCommand = (MoveCommand)lastCommand;
 
+            // If last command was a MoveCommand called by multiple dragging cards, undo every multiple MoveCommand
             if(moveCommand.IsMultipleMove)
             {
                 List<MoveCommand> mulitpleMoveCommands = new List<MoveCommand>();

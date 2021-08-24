@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Command called when the player reverted the deck reset
+/// </summary>
 public class ResetCommand : ICommand
 {
     private int _lastScoreCount = 0;

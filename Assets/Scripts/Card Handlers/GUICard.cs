@@ -8,6 +8,9 @@ using UnityEngine.EventSystems;
 public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
     #region Public reference variables
+    /// <summary>
+    /// The card data reference set for this GUICard
+    /// </summary>
     public CardData CardDataReference
     {
         get
@@ -15,6 +18,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return _currentCardData;
         }
     }
+
+    /// <summary>
+    /// The current side shown by the card (Front or Back) 
+    /// </summary>
     public CardSide CurrentSide
     {
         get
@@ -22,6 +29,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             return _currentSide;
         }
     }
+
+    /// <summary>
+    /// The current game area in which this card is (Table, AcePile, DrawnPile)
+    /// </summary>
     public CardArea CardArea
     {
         get
@@ -30,6 +41,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         }
     }
 
+    /// <summary>
+    /// The list of appended card filled when the player tries to move a stacked pile of cards
+    /// </summary>
     public List<GUICard> AppendedCards
     {
         get
@@ -38,6 +52,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         }
     }
 
+    /// <summary>
+    /// The reference of the table pile this card is stored in
+    /// </summary>
     public PileHandler PileHandlerParent
     {
         get
@@ -52,7 +69,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     private CardArea _cardArea = CardArea.Table;
     private CardData _currentCardData = null;
     private Transform _currentParent = null;
-    [SerializeField]
     private List<GUICard> _appendedCards = new List<GUICard>();
     private bool _isAppended = false;
     private PileHandler _pileHandlerParent = null;
@@ -73,16 +89,42 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     #endregion
 
     #region Drag variables
+    /// <summary>
+    /// Store the position where the card was before drag started
+    /// </summary>
     private Vector3 _dragStartPosition = Vector3.zero;
+
+    /// <summary>
+    /// Store the updated position that the card has to follow during the drag
+    /// </summary>
     private Vector3 _currentDragPosition = Vector3.zero;
+
+    /// <summary>
+    /// Store if the card is currently in drag state
+    /// </summary>
     private bool _dragging = false;
     //private bool _resetPosition = false;
     #endregion
 
     #region Visual sorting variables
+    /// <summary>
+    /// Component used to enable or disable the raycast event on this UI element
+    /// </summary>
     private CanvasGroup _canvasGroup = null;
+
+    /// <summary>
+    /// Component used to update the layer order use to see this UI element in top of other elements
+    /// </summary>
     private Canvas _canvas = null;
+
+    /// <summary>
+    /// Store the value of the override sorting bool before the drag started
+    /// </summary>
     private bool _beginDragOverrideSorting = false;
+
+    /// <summary>
+    /// Store the sorting order of the UI element before the drag started
+    /// </summary>
     private int _beginDragSortingOrder = 0;
     #endregion
 
@@ -164,14 +206,18 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     }
 
     /// <summary>
-    /// 
+    /// Update the current parent reference
     /// </summary>
     /// <param name="newParent"></param>
     public void UpdateParent(Transform newParent)
     {
         _currentParent = newParent;
     }
-
+    
+    /// <summary>
+    /// Set the Canvas sorting order
+    /// </summary>
+    /// <param name="sortingOrder"></param>
     public void SetSortingOrder(int sortingOrder)
     {
         if (sortingOrder < 0)
@@ -184,21 +230,37 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _canvas.sortingOrder = sortingOrder;
     }
 
+    /// <summary>
+    /// Enable or disable the ability of this card to be detected by raycast events (i.e. mouse over)
+    /// </summary>
+    /// <param name="value"></param>
     public void EnableRaycast(bool value)
     {
         _canvasGroup.blocksRaycasts = value;
     }
 
+    /// <summary>
+    /// Save the position of this card before the stacked cards drag started.
+    /// </summary>
+    /// <param name="position"></param>
     public void SetStartAppendDragPosition(Vector3 position)
     {
         _dragStartPosition = position;
     }
 
+    /// <summary>
+    /// It this card is one of the appended cards in stacked cards drag, update its state
+    /// </summary>
+    /// <param name="value"></param>
     public void SetAppended(bool value)
     {
         _isAppended = value;
     }
 
+    /// <summary>
+    /// Append cards to this card in case of multiple stacked cards dragging
+    /// </summary>
+    /// <param name="cardToAppend"></param>
     public void AppendDraggingCards(GUICard cardToAppend)
     {
         cardToAppend.SetAppended(true);
@@ -207,6 +269,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _appendedCards.Add(cardToAppend);   
     }
 
+    /// <summary>
+    /// Release the references of stacked dragging cards
+    /// </summary>
     public void ReleaseAppendedCards()
     {
         for (int i = 0; i < _appendedCards.Count; i++)
@@ -219,8 +284,15 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _appendedCards.Clear();
     }
 
-    public bool IsLastFrontCardInPile()
+    /// <summary>
+    /// Check if the pile in which this card is has a back faced card in the previous position. Used to decide if the MoveCommand has to assign 5 points
+    /// </summary>
+    /// <param name="cardsPileCount"></param>
+    /// <returns></returns>
+    public bool IsLastFrontCardInPile(int cardsPileCount)
     {
+        Debug.Log(cardsPileCount);
+        Debug.Log("IsLastFrontCardInPile");
         PileHandler pileHandler = GetComponentInParent<PileHandler>();
 
         if (pileHandler == null || pileHandler.CardArea != CardArea.Table)
@@ -229,30 +301,23 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (pileHandler.GUICards.Count < 2)
             return false;
 
+        if (pileHandler.GUICards.Count == cardsPileCount)
+            return false;
+
+        Debug.Log("PileHandler:" + pileHandler.GUICards.Count);
+
         GUICard previousCardInPile = pileHandler.GUICards[pileHandler.GUICards.IndexOf(this) - 1];
+
+        Debug.Log("previousCardInPile:" + previousCardInPile.CardDataReference.Rank);
 
         if (previousCardInPile == null)
             return false;
 
-        if(previousCardInPile != null)
+        if (previousCardInPile != null)
         {
             if (previousCardInPile.CurrentSide == CardSide.Back)
                 return true;
         }
-
-        return false;
-    }
-
-    public bool PileHandlerContainsCard(GUICard guiCard)
-    {
-        PileHandler pileHandler = GetComponentInParent<PileHandler>();
-
-        if (pileHandler == null)
-            return false;
-
-        if (pileHandler.GUICards.Contains(guiCard))
-            return true;
-
         return false;
     }
 
@@ -293,7 +358,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (_currentSide == CardSide.Back)
             return;
 
-        //GameManager.Instance.MoveSystem.CheckMove();
         Debug.Log("OnEndDrag: " + CardDataReference.Rank + " of " + CardDataReference.Suit);
         EventsManager.Instance.OnCardDropped.Invoke();
     }
@@ -348,8 +412,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         if (!_dragging || _currentSide == CardSide.Back)
             return;
 
+        // Move the dragging card
         transform.position = Vector3.Lerp(transform.position, _currentDragPosition, 20 * Time.deltaTime);
 
+        // Move all the appended cards during drag
         if(_appendedCards.Count > 0)
         {
             for (int i = 0; i < _appendedCards.Count; i++)
@@ -380,6 +446,9 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         return Color.black;
     }
 
+    /// <summary>
+    /// Move back to saved position before the drag started
+    /// </summary>
     private void MoveToEndDragPosition()
     {
         iTween.MoveTo(gameObject, _dragStartPosition, 0.5f);
@@ -409,6 +478,11 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         transform.SetParent(_currentParent);
     }
 
+    /// <summary>
+    /// Handles what happens if any MoveCommand has been called
+    /// </summary>
+    /// <param name="guiCard"></param>
+    /// <param name="destinationParent"></param>
     private void HandleCardMove(GUICard guiCard, Transform destinationParent)
     {
         // Check if the the card moved is this
@@ -430,6 +504,10 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         _dragging = false;
     }
 
+    /// <summary>
+    /// Handles what happens if the drag ended and any MoveCommand was called
+    /// </summary>
+    /// <param name="guiCard"></param>
     private void HandleCardFailMove(GUICard guiCard)
     {
         if (guiCard != this)
@@ -446,7 +524,6 @@ public class GUICard : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
             }
 
             ReleaseAppendedCards();
-            //_appendedCards.Clear();
         }
 
         _canvas.overrideSorting = _beginDragOverrideSorting;
